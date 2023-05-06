@@ -42,7 +42,6 @@
     "build": "npx tsc",
     "start": "node dist/server.js",
     "dev": "nodemon",
-    "watch": "npx tsc -watch",
-    "kill-port": "cross-port-killer --port 3002 --kill"
+    "watch": "npx tsc -watch"
   }
 }
