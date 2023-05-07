@@ -33,6 +33,22 @@ class CommentService {
             throw responseData(err.data, 'Server', CODE.SERVER, true);
         }
     }
+
+    async getCommentByPostId(postId: number) {
+        try {
+            const comments = await commentRepository.getByPostId(postId);
+
+            return comments;
+        } catch (error) {
+            const err = error as ThrowResponse;
+            if (err.status) {
+                throw err;
+            }
+
+            if (!__PROD__) logger.error(err.message);
+            throw responseData(err.data, 'Server', CODE.SERVER, true);
+        }
+    }
 }
 
 export default new CommentService();

@@ -52,5 +52,38 @@ class PostService {
             throw responseData(null, 'Server', CODE.SERVER, true);
         }
     }
+
+    async createPost(
+        title: string,
+        content: string,
+        thumbnail: string,
+        userId: number
+    ) {
+        try {
+            const createdPost = await postRepository.create(
+                title,
+                content,
+                thumbnail,
+                userId
+            );
+
+            if (!createdPost) {
+                throw responseData(
+                    null,
+                    "Can't create post",
+                    CODE.NOT_FOUND,
+                    true
+                );
+            }
+
+            return createdPost;
+        } catch (error: any) {
+            if (error.status) {
+                throw error;
+            }
+            if (!__PROD__) logger.error(error.message);
+            throw responseData(null, 'Server', CODE.SERVER, true);
+        }
+    }
 }
 export default new PostService();

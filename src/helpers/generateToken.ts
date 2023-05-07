@@ -5,6 +5,7 @@ function generateToken(key: string, user: User, expiresIn: string | number) {
     return jwt.sign(
         {
             id: user.id,
+            avatar: user.avatar,
         },
         key,
         {

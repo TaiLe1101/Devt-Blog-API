@@ -3,6 +3,8 @@ import userService from '../services/UserService';
 import { responseData } from '../../helpers';
 import { CODE } from '../../constant';
 import ThrowResponse from '../../types/ThrowResponse';
+import { RequestMiddleware } from '../../types/RequestMiddleware';
+import { FileUpload } from '../../types/FileUpload';
 
 class UserController {
     async index(req: Request, res: Response) {
@@ -60,6 +62,33 @@ class UserController {
         } catch (error) {
             const err = error as ThrowResponse;
 
+            return res
+                .status(err.status)
+                .json(
+                    responseData(err.data, err.message, err.status, err.error)
+                );
+        }
+    }
+
+    async update(req: RequestMiddleware, res: Response) {
+        const fullName = req.body.fullName;
+        const avatarFile = req.file;
+        const id = Number(req.user?.id);
+        const oldAvatar = req.user?.avatar;
+
+        try {
+            const result = await userService.updateUserById(
+                id,
+                fullName,
+                avatarFile,
+                oldAvatar
+            );
+
+            return res
+                .status(CODE.SUCCESS)
+                .json(responseData(result, 'Updated successfully'));
+        } catch (error) {
+            const err = error as ThrowResponse;
             return res
                 .status(err.status)
                 .json(

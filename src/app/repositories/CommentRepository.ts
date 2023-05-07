@@ -10,6 +10,16 @@ class CommentRepository {
 
         return comment;
     }
+
+    async getByPostId(postId: number) {
+        const comments = await Comment.findAll({
+            where: {
+                postId,
+            },
+        });
+
+        return comments;
+    }
 }
 
 export default new CommentRepository();

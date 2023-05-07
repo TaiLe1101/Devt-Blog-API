@@ -4,6 +4,7 @@ import postService from '../services/PostService';
 import { responseData } from '../../helpers';
 import ThrowResponse from '../../types/ThrowResponse';
 import { CODE } from '../../constant';
+import { RequestMiddleware } from '../../types/RequestMiddleware';
 
 class PostController {
     async index(_req: Request, res: Response) {
@@ -38,6 +39,44 @@ class PostController {
             }
 
             const post = await postService.getPostById(id);
+
+            return res.status(CODE.SUCCESS).json(responseData(post, 'Ok'));
+        } catch (error) {
+            const err = error as ThrowResponse;
+            return res
+                .status(err.status)
+                .json(
+                    responseData(err.data, err.message, err.status, err.error)
+                );
+        }
+    }
+
+    async create(req: RequestMiddleware, res: Response) {
+        const title = req.body.title;
+        const content = req.body.content;
+        const thumbnail = '';
+        const userId = Number(req.user?.id);
+
+        try {
+            if (!title || !content || !userId || userId <= 0 || isNaN(userId)) {
+                return res
+                    .status(CODE.BAD_REQUEST)
+                    .json(
+                        responseData(
+                            null,
+                            'Value is valid',
+                            CODE.BAD_REQUEST,
+                            true
+                        )
+                    );
+            }
+
+            const post = await postService.createPost(
+                title,
+                content,
+                thumbnail,
+                userId
+            );
 
             return res.status(CODE.SUCCESS).json(responseData(post, 'Ok'));
         } catch (error) {

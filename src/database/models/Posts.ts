@@ -6,6 +6,7 @@ import User from './Users';
 
 export interface PostAttributes {
     id?: number;
+
     title?: string | null;
     content?: string | null;
     thumbnail?: string | null;

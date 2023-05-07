@@ -149,7 +149,7 @@ class AuthController {
                     .json(
                         responseData(
                             null,
-                            'Token is valid',
+                            'You are not logged in',
                             CODE.BAD_REQUEST,
                             true
                         )

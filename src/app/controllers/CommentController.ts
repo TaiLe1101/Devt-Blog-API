@@ -1,7 +1,7 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import ThrowResponse from '../../types/ThrowResponse';
 import { responseData } from '../../helpers';
-import CommentService from '../services/CommentService';
+import commentService from '../services/CommentService';
 import { CODE } from '../../constant';
 import { RequestMiddleware } from '../../types/RequestMiddleware';
 
@@ -24,7 +24,7 @@ class CommentController {
                 );
             }
 
-            const comment = await CommentService.addComment(
+            const comment = await commentService.addComment(
                 content,
                 userId,
                 postId
@@ -33,6 +33,36 @@ class CommentController {
             return res
                 .status(CODE.SUCCESS)
                 .json(responseData(comment, 'Comment success'));
+        } catch (error) {
+            const err = error as ThrowResponse;
+            return res
+                .status(err.status)
+                .json(
+                    responseData(err.data, err.message, err.status, err.error)
+                );
+        }
+    }
+
+    async getByPostId(req: Request, res: Response) {
+        const postId = Number(req.params.postId);
+        try {
+            if (postId <= 0 || isNaN(postId)) {
+                return res
+                    .status(CODE.BAD_REQUEST)
+                    .json(
+                        responseData(
+                            null,
+                            'Id is valid',
+                            CODE.BAD_REQUEST,
+                            true
+                        )
+                    );
+            }
+
+            const comments = await commentService.getCommentByPostId(postId);
+            return res
+                .status(CODE.SUCCESS)
+                .json(responseData(comments, 'Get comment success'));
         } catch (error) {
             const err = error as ThrowResponse;
             return res

@@ -30,6 +30,22 @@ class PostRepository {
 
         return post;
     }
+
+    async create(
+        title: string,
+        content: string,
+        thumbnail: string,
+        userId: number
+    ) {
+        const createdPost = await Post.create({
+            title,
+            content,
+            thumbnail,
+            userId,
+        });
+
+        return createdPost;
+    }
 }
 
 export default new PostRepository();
