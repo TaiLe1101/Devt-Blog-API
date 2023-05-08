@@ -71,7 +71,7 @@ class AuthService {
             if (!user) {
                 throw responseData(
                     null,
-                    'Username is valid',
+                    'Incorrect username',
                     CODE.BAD_REQUEST,
                     true
                 );
@@ -166,7 +166,7 @@ class AuthService {
             if (!newAccessToken || !newRefreshToken) {
                 throw responseData(
                     null,
-                    'Token is valid',
+                    'Refresh token failed',
                     CODE.BAD_REQUEST,
                     true
                 );
@@ -191,9 +191,11 @@ class AuthService {
     async userLogout(refreshToken: string) {
         try {
             const deleteResult =
-                cookieStoreService.deleteRefreshTokeByValue(refreshToken);
+                await cookieStoreService.deleteRefreshTokeByValue(refreshToken);
 
-            if (!deleteResult) {
+            logger.info(deleteResult);
+
+            if (deleteResult.deletedCount < 0) {
                 throw responseData(
                     null,
                     'Logout failed',

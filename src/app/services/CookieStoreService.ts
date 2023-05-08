@@ -34,6 +34,14 @@ class CookieStoreService {
     async findRefreshTokenByValue(value: string) {
         try {
             const refreshToken = await cookieStoreRepository.findByValue(value);
+            if (!refreshToken) {
+                throw responseData(
+                    null,
+                    'Refresh token not found',
+                    CODE.NOT_FOUND,
+                    true
+                );
+            }
             return refreshToken;
         } catch (error) {
             const err = error as ThrowResponse;
@@ -51,7 +59,7 @@ class CookieStoreService {
         try {
             const deleteResult = await cookieStoreRepository.delete(value);
 
-            if (!deleteResult) {
+            if (deleteResult.deletedCount < 0) {
                 throw responseData(
                     null,
                     'Deleted failed',

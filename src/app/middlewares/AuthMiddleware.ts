@@ -25,24 +25,25 @@ class AuthMiddleware {
                             .json(
                                 responseData(
                                     null,
-                                    'Token is valid',
+                                    'Verify token failed',
                                     CODE.BAD_REQUEST,
                                     true
                                 )
                             );
                     }
+
                     req.user = user as User;
                     next();
                 }
             );
         } else {
             return res
-                .status(CODE.BAD_REQUEST)
+                .status(CODE.FORBIDDEN)
                 .json(
                     responseData(
                         null,
                         "You're not Authorization",
-                        CODE.BAD_REQUEST,
+                        CODE.FORBIDDEN,
                         true
                     )
                 );
@@ -58,11 +59,11 @@ class AuthMiddleware {
             if (req.user?.id === Number(req.params.id)) {
                 next();
             } else {
-                res.status(CODE.BAD_REQUEST).json(
+                res.status(CODE.FORBIDDEN).json(
                     responseData(
                         null,
-                        'You not permission',
-                        CODE.BAD_REQUEST,
+                        'Permission denied',
+                        CODE.FORBIDDEN,
                         true
                     )
                 );

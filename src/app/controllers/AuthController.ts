@@ -5,6 +5,7 @@ import { responseData } from '../../helpers';
 import ThrowResponse from '../../types/ThrowResponse';
 import { CODE, DATE, __PROD__ } from '../../constant';
 import authService from '../services/AuthService';
+import { isMinLength, isStringEmpty, validateValues } from '../../validators';
 
 class AuthController {
     async register(req: Request, res: Response) {
@@ -14,9 +15,8 @@ class AuthController {
 
         try {
             if (
-                fullName.trim().length <= 0 ||
-                (username.trim().length <= 0 && username.includes('@')) ||
-                password.trim().length <= 5
+                validateValues([fullName, username, password]) ||
+                !isMinLength(password, 6)
             ) {
                 return res
                     .status(CODE.BAD_REQUEST)
@@ -37,7 +37,7 @@ class AuthController {
             );
             return res
                 .status(CODE.SUCCESS)
-                .json(responseData(newUser, 'Register success'));
+                .json(responseData(newUser, 'Register successfully'));
         } catch (error) {
             const err = error as ThrowResponse;
 
@@ -55,15 +55,15 @@ class AuthController {
 
         try {
             if (
-                (username.trim().length <= 0 && username.includes('@')) ||
-                password.trim().length <= 0
+                validateValues([username, password]) ||
+                !isMinLength(password, 6)
             ) {
                 return res
                     .status(CODE.BAD_REQUEST)
                     .json(
                         responseData(
                             null,
-                            'username or password is valid',
+                            'User name or password is valid',
                             CODE.BAD_REQUEST,
                             true
                         )
@@ -72,17 +72,23 @@ class AuthController {
 
             const user = await authService.userLogin(username, password);
             const { refreshToken, ...others } = user;
+
             res.cookie('refreshToken', refreshToken, {
-                maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, // 1hour
                 httpOnly: true,
                 secure: __PROD__,
                 sameSite: 'lax',
+                maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, // 1hour
             });
 
             return res
                 .status(CODE.SUCCESS)
                 .json(
-                    responseData(others, 'Login success', CODE.SUCCESS, false)
+                    responseData(
+                        others,
+                        'Login successfully',
+                        CODE.SUCCESS,
+                        false
+                    )
                 );
         } catch (error) {
             const err = error as ThrowResponse;
@@ -98,13 +104,13 @@ class AuthController {
     async refreshToken(req: Request, res: Response) {
         const refreshToken: string = req.cookies.refreshToken;
         try {
-            if (!refreshToken || refreshToken.trim().length <= 0) {
+            if (isStringEmpty([refreshToken])) {
                 return res
                     .status(CODE.BAD_REQUEST)
                     .json(
                         responseData(
                             null,
-                            'Can not find refresh token',
+                            'RefreshToken not found',
                             CODE.BAD_REQUEST,
                             true
                         )
@@ -126,7 +132,7 @@ class AuthController {
                 .json(
                     responseData(
                         { accessToken: newAccessToken },
-                        'Refresh success'
+                        'Refresh successfully'
                     )
                 );
         } catch (error) {
@@ -143,7 +149,7 @@ class AuthController {
     async logout(req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken;
         try {
-            if (!refreshToken) {
+            if (isStringEmpty([refreshToken])) {
                 return res
                     .status(CODE.BAD_REQUEST)
                     .json(
@@ -162,7 +168,7 @@ class AuthController {
 
             return res
                 .status(CODE.SUCCESS)
-                .json(responseData(null, 'logout success'));
+                .json(responseData(null, 'Logout successfully'));
         } catch (error) {
             const err = error as ThrowResponse;
 

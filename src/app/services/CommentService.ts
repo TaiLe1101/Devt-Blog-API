@@ -16,7 +16,7 @@ class CommentService {
             if (!comment) {
                 throw responseData(
                     null,
-                    'You not comment in this post',
+                    "You can't comment",
                     CODE.BAD_REQUEST,
                     true
                 );

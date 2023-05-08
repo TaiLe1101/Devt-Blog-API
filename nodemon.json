@@ -1,7 +1,7 @@
 {
     "watch": [
-        "src"
+        "dist"
     ],
     "ext": ".ts, .js",
-    "exec": "ts-node ./src/server.ts"
+    "exec": "node ./dist/server.js"
 }

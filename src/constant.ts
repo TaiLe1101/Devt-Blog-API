@@ -2,6 +2,7 @@ export const __PROD__ = process.env.NODE_ENV === 'production';
 export const CODE = {
     SUCCESS: 200,
     BAD_REQUEST: 400,
+    FORBIDDEN: 403,
     NOT_FOUND: 404,
     SERVER: 500,
 };

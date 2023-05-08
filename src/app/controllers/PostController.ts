@@ -5,12 +5,15 @@ import { responseData } from '../../helpers';
 import ThrowResponse from '../../types/ThrowResponse';
 import { CODE } from '../../constant';
 import { RequestMiddleware } from '../../types/RequestMiddleware';
+import { validateValues } from '../../validators';
 
 class PostController {
     async index(_req: Request, res: Response) {
         try {
             const posts = await postService.getAllPosts();
-            return res.status(CODE.SUCCESS).json(responseData(posts));
+            return res
+                .status(CODE.SUCCESS)
+                .json(responseData(posts, 'Get Posts Successfully'));
         } catch (error) {
             const err = error as ThrowResponse;
 
@@ -25,7 +28,7 @@ class PostController {
     async getById(req: Request, res: Response) {
         const id = Number(req.query.id);
         try {
-            if (!id || isNaN(id)) {
+            if (validateValues([id], { unPositiveNumber: true })) {
                 return res
                     .status(CODE.BAD_REQUEST)
                     .json(
@@ -58,7 +61,11 @@ class PostController {
         const userId = Number(req.user?.id);
 
         try {
-            if (!title || !content || !userId || userId <= 0 || isNaN(userId)) {
+            if (
+                validateValues([title, content, userId], {
+                    unPositiveNumber: true,
+                })
+            ) {
                 return res
                     .status(CODE.BAD_REQUEST)
                     .json(

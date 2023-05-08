@@ -4,6 +4,7 @@ import { responseData } from '../../helpers';
 import commentService from '../services/CommentService';
 import { CODE } from '../../constant';
 import { RequestMiddleware } from '../../types/RequestMiddleware';
+import { validateValues } from '../../validators';
 
 class CommentController {
     async add(req: RequestMiddleware, res: Response) {
@@ -13,15 +14,20 @@ class CommentController {
 
         try {
             if (
-                content.trim().length <= 0 ||
-                isNaN(userId) ||
-                isNaN(postId) ||
-                postId <= 0 ||
-                userId <= 0
+                validateValues([content, postId, userId], {
+                    unPositiveNumber: true,
+                })
             ) {
-                res.status(CODE.BAD_REQUEST).json(
-                    responseData(null, 'Value is valid', CODE.BAD_REQUEST, true)
-                );
+                return res
+                    .status(CODE.BAD_REQUEST)
+                    .json(
+                        responseData(
+                            null,
+                            'Value is valid',
+                            CODE.BAD_REQUEST,
+                            true
+                        )
+                    );
             }
 
             const comment = await commentService.addComment(
@@ -32,7 +38,7 @@ class CommentController {
 
             return res
                 .status(CODE.SUCCESS)
-                .json(responseData(comment, 'Comment success'));
+                .json(responseData(comment, 'Comment successfully'));
         } catch (error) {
             const err = error as ThrowResponse;
             return res
@@ -46,7 +52,7 @@ class CommentController {
     async getByPostId(req: Request, res: Response) {
         const postId = Number(req.params.postId);
         try {
-            if (postId <= 0 || isNaN(postId)) {
+            if (validateValues([postId], { unPositiveNumber: true })) {
                 return res
                     .status(CODE.BAD_REQUEST)
                     .json(

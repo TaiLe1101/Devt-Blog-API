@@ -12,7 +12,7 @@ class PostService {
             if (!posts) {
                 throw responseData(
                     null,
-                    "Can't get post",
+                    "Can't get posts",
                     CODE.NOT_FOUND,
                     true
                 );
@@ -36,7 +36,7 @@ class PostService {
             if (!post) {
                 throw responseData(
                     null,
-                    "Can't get post",
+                    'Post not found',
                     CODE.NOT_FOUND,
                     true
                 );

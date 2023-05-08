@@ -2,22 +2,23 @@
 import fs from 'fs';
 
 import { __PROD__, CODE } from '../../constant';
-import { UserAttributes } from '../../database/models/Users';
 import { responseData } from '../../helpers';
 import logger from '../../helpers/logger';
 import ThrowResponse from '../../types/ThrowResponse';
 import userRepository from '../repositories/UserRepository';
-import { Field, Multer } from 'multer';
-import { File } from 'buffer';
 import { FileUpload } from '../../types/FileUpload';
-import convertSignStringToUnSignString from '../../helpers/convertSignStringToUnSignString';
 
 class UserService {
     async getAllUsers() {
         try {
             const users = await userRepository.findAllUser();
             if (!users) {
-                throw responseData(null, 'Users Empty', CODE.BAD_REQUEST, true);
+                throw responseData(
+                    null,
+                    'Get Users failed',
+                    CODE.BAD_REQUEST,
+                    true
+                );
             }
             return users;
         } catch (error) {
@@ -87,17 +88,17 @@ class UserService {
     async updateUserById(
         id: number,
         fullName: string | null,
-        avatarFile: FileUpload,
-        oldAvatar: string | null | undefined
+        avatarFile: FileUpload
     ) {
         try {
             let avatar: string | null = null;
-            if (oldAvatar) {
-                fs.unlinkSync(
-                    'src/public/uploads/user/' + oldAvatar.split('/').pop()
-                );
-            }
+            const user = await userRepository.findById(id);
+
             if (avatarFile) {
+                fs.unlinkSync(
+                    `src/public/uploads/user/${user?.avatar?.split('/').pop()}`
+                );
+
                 avatar = `${process.env.DOMAIN_ENV}/uploads/user/${avatarFile.filename}`;
             }
 

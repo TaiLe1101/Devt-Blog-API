@@ -4,7 +4,7 @@ import { responseData } from '../../helpers';
 import { CODE } from '../../constant';
 import ThrowResponse from '../../types/ThrowResponse';
 import { RequestMiddleware } from '../../types/RequestMiddleware';
-import { FileUpload } from '../../types/FileUpload';
+import { validateValues } from '../../validators';
 
 class UserController {
     async index(req: Request, res: Response) {
@@ -34,7 +34,7 @@ class UserController {
     async delete(req: Request, res: Response) {
         const id = Number(req.params.id);
         try {
-            if (isNaN(id) || id <= 0) {
+            if (validateValues([id], { unPositiveNumber: true })) {
                 return res
                     .status(CODE.BAD_REQUEST)
                     .json(
@@ -74,14 +74,12 @@ class UserController {
         const fullName = req.body.fullName;
         const avatarFile = req.file;
         const id = Number(req.user?.id);
-        const oldAvatar = req.user?.avatar;
 
         try {
             const result = await userService.updateUserById(
                 id,
                 fullName,
-                avatarFile,
-                oldAvatar
+                avatarFile
             );
 
             return res

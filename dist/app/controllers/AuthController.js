@@ -26,6 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const helpers_1 = require("../../helpers");
 const constant_1 = require("../../constant");
 const AuthService_1 = __importDefault(require("../services/AuthService"));
+const validators_1 = require("../../validators");
 class AuthController {
     register(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -33,9 +34,8 @@ class AuthController {
             const username = req.body.username;
             const password = req.body.password;
             try {
-                if (fullName.trim().length <= 0 ||
-                    (username.trim().length <= 0 && username.includes('@')) ||
-                    password.trim().length <= 5) {
+                if ((0, validators_1.validateValues)([fullName, username, password]) ||
+                    !(0, validators_1.isMinLength)(password, 6)) {
                     return res
                         .status(constant_1.CODE.BAD_REQUEST)
                         .json((0, helpers_1.responseData)(null, 'Value is valid', constant_1.CODE.BAD_REQUEST, true));
@@ -43,7 +43,7 @@ class AuthController {
                 const newUser = yield AuthService_1.default.userRegister(fullName, username, password);
                 return res
                     .status(constant_1.CODE.SUCCESS)
-                    .json((0, helpers_1.responseData)(newUser, 'Register success'));
+                    .json((0, helpers_1.responseData)(newUser, 'Register successfully'));
             }
             catch (error) {
                 const err = error;
@@ -58,23 +58,23 @@ class AuthController {
             const username = req.body.username;
             const password = req.body.password;
             try {
-                if ((username.trim().length <= 0 && username.includes('@')) ||
-                    password.trim().length <= 0) {
+                if ((0, validators_1.validateValues)([username, password]) ||
+                    !(0, validators_1.isMinLength)(password, 6)) {
                     return res
                         .status(constant_1.CODE.BAD_REQUEST)
-                        .json((0, helpers_1.responseData)(null, 'username or password is valid', constant_1.CODE.BAD_REQUEST, true));
+                        .json((0, helpers_1.responseData)(null, 'User name or password is valid', constant_1.CODE.BAD_REQUEST, true));
                 }
                 const user = yield AuthService_1.default.userLogin(username, password);
                 const { refreshToken } = user, others = __rest(user, ["refreshToken"]);
                 res.cookie('refreshToken', refreshToken, {
-                    maxAge: constant_1.DATE.MILLISECOND * constant_1.DATE.SECOND * constant_1.DATE.MINUTES,
                     httpOnly: true,
                     secure: constant_1.__PROD__,
                     sameSite: 'lax',
+                    maxAge: constant_1.DATE.MILLISECOND * constant_1.DATE.SECOND * constant_1.DATE.MINUTES, // 1hour
                 });
                 return res
                     .status(constant_1.CODE.SUCCESS)
-                    .json((0, helpers_1.responseData)(others, 'Login success', constant_1.CODE.SUCCESS, false));
+                    .json((0, helpers_1.responseData)(others, 'Login successfully', constant_1.CODE.SUCCESS, false));
             }
             catch (error) {
                 const err = error;
@@ -88,10 +88,10 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             const refreshToken = req.cookies.refreshToken;
             try {
-                if (!refreshToken || refreshToken.trim().length <= 0) {
+                if ((0, validators_1.isStringEmpty)([refreshToken])) {
                     return res
                         .status(constant_1.CODE.BAD_REQUEST)
-                        .json((0, helpers_1.responseData)(null, 'Can not find refresh token', constant_1.CODE.BAD_REQUEST, true));
+                        .json((0, helpers_1.responseData)(null, 'RefreshToken not found', constant_1.CODE.BAD_REQUEST, true));
                 }
                 const { newAccessToken, newRefreshToken } = yield AuthService_1.default.refreshToken(refreshToken);
                 res.cookie('refreshToken', newRefreshToken, {
@@ -102,7 +102,7 @@ class AuthController {
                 });
                 return res
                     .status(constant_1.CODE.SUCCESS)
-                    .json((0, helpers_1.responseData)({ accessToken: newAccessToken }, 'Refresh success'));
+                    .json((0, helpers_1.responseData)({ accessToken: newAccessToken }, 'Refresh successfully'));
             }
             catch (error) {
                 const err = error;
@@ -116,16 +116,16 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             const refreshToken = req.cookies.refreshToken;
             try {
-                if (!refreshToken) {
+                if ((0, validators_1.isStringEmpty)([refreshToken])) {
                     return res
                         .status(constant_1.CODE.BAD_REQUEST)
-                        .json((0, helpers_1.responseData)(null, 'Token is valid', constant_1.CODE.BAD_REQUEST, true));
+                        .json((0, helpers_1.responseData)(null, 'You are not logged in', constant_1.CODE.BAD_REQUEST, true));
                 }
                 res.clearCookie('refreshToken');
                 yield AuthService_1.default.userLogout(refreshToken);
                 return res
                     .status(constant_1.CODE.SUCCESS)
-                    .json((0, helpers_1.responseData)(null, 'logout success'));
+                    .json((0, helpers_1.responseData)(null, 'Logout successfully'));
             }
             catch (error) {
                 const err = error;
