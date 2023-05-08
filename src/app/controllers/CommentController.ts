@@ -7,7 +7,7 @@ import { RequestMiddleware } from '../../types/RequestMiddleware';
 import { validateValues } from '../../validators';
 
 class CommentController {
-    async add(req: RequestMiddleware, res: Response) {
+    async create(req: RequestMiddleware, res: Response) {
         const content: string = req.body.content;
         const userId = Number(req.user?.id);
         const postId = Number(req.params.postId);
@@ -69,6 +69,37 @@ class CommentController {
             return res
                 .status(CODE.SUCCESS)
                 .json(responseData(comments, 'Get comment success'));
+        } catch (error) {
+            const err = error as ThrowResponse;
+            return res
+                .status(err.status)
+                .json(
+                    responseData(err.data, err.message, err.status, err.error)
+                );
+        }
+    }
+
+    async delete(req: Request, res: Response) {
+        const id = Number(req.params.id);
+        try {
+            if (validateValues([id], { unPositiveNumber: true })) {
+                return res
+                    .status(CODE.BAD_REQUEST)
+                    .json(
+                        responseData(
+                            null,
+                            'Id is valid',
+                            CODE.BAD_REQUEST,
+                            true
+                        )
+                    );
+            }
+
+            await commentService.deleteCommentById(id);
+
+            return res
+                .status(CODE.SUCCESS)
+                .json(responseData(null, 'Deleted successfully'));
         } catch (error) {
             const err = error as ThrowResponse;
             return res

@@ -15,8 +15,8 @@ class AuthMiddleware {
                 jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_KEY, (err, user) => {
                     if (err) {
                         return res
-                            .status(constant_1.CODE.BAD_REQUEST)
-                            .json((0, helpers_1.responseData)(null, 'Verify token failed', constant_1.CODE.BAD_REQUEST, true));
+                            .status(constant_1.CODE.FORBIDDEN)
+                            .json((0, helpers_1.responseData)(null, 'Permission denied', constant_1.CODE.FORBIDDEN, true));
                     }
                     req.user = user;
                     next();

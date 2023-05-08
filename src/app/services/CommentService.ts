@@ -49,6 +49,31 @@ class CommentService {
             throw responseData(err.data, 'Server', CODE.SERVER, true);
         }
     }
+
+    async deleteCommentById(id: number) {
+        try {
+            const deletedResult = await commentRepository.delete(id);
+
+            if (deletedResult <= 0) {
+                throw responseData(
+                    null,
+                    'Deleted comment failed',
+                    CODE.BAD_REQUEST,
+                    true
+                );
+            }
+
+            return deletedResult;
+        } catch (error) {
+            const err = error as ThrowResponse;
+            if (err.status) {
+                throw err;
+            }
+
+            if (!__PROD__) logger.error(err.message);
+            throw responseData(err.data, 'Server', CODE.SERVER, true);
+        }
+    }
 }
 
 export default new CommentService();

@@ -54,5 +54,25 @@ class CommentService {
             }
         });
     }
+    deleteCommentById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const deletedResult = yield CommentRepository_1.default.delete(id);
+                if (deletedResult <= 0) {
+                    throw (0, helpers_1.responseData)(null, 'Deleted comment failed', constant_1.CODE.BAD_REQUEST, true);
+                }
+                return deletedResult;
+            }
+            catch (error) {
+                const err = error;
+                if (err.status) {
+                    throw err;
+                }
+                if (!constant_1.__PROD__)
+                    logger_1.default.error(err.message);
+                throw (0, helpers_1.responseData)(err.data, 'Server', constant_1.CODE.SERVER, true);
+            }
+        });
+    }
 }
 exports.default = new CommentService();

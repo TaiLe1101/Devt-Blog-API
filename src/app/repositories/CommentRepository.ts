@@ -20,6 +20,16 @@ class CommentRepository {
 
         return comments;
     }
+
+    async delete(id: number) {
+        const deletedResult = await Comment.destroy({
+            where: {
+                id,
+            },
+        });
+
+        return deletedResult;
+    }
 }
 
 export default new CommentRepository();

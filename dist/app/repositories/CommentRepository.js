@@ -34,5 +34,15 @@ class CommentRepository {
             return comments;
         });
     }
+    delete(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const deletedResult = yield Comments_1.default.destroy({
+                where: {
+                    id,
+                },
+            });
+            return deletedResult;
+        });
+    }
 }
 exports.default = new CommentRepository();

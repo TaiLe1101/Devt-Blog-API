@@ -21,12 +21,12 @@ class AuthMiddleware {
                 (err, user) => {
                     if (err) {
                         return res
-                            .status(CODE.BAD_REQUEST)
+                            .status(CODE.FORBIDDEN)
                             .json(
                                 responseData(
                                     null,
-                                    'Verify token failed',
-                                    CODE.BAD_REQUEST,
+                                    'Permission denied',
+                                    CODE.FORBIDDEN,
                                     true
                                 )
                             );

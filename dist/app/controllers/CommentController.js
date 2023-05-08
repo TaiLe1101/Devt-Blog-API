@@ -17,7 +17,7 @@ const CommentService_1 = __importDefault(require("../services/CommentService"));
 const constant_1 = require("../../constant");
 const validators_1 = require("../../validators");
 class CommentController {
-    add(req, res) {
+    create(req, res) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const content = req.body.content;
@@ -57,6 +57,28 @@ class CommentController {
                 return res
                     .status(constant_1.CODE.SUCCESS)
                     .json((0, helpers_1.responseData)(comments, 'Get comment success'));
+            }
+            catch (error) {
+                const err = error;
+                return res
+                    .status(err.status)
+                    .json((0, helpers_1.responseData)(err.data, err.message, err.status, err.error));
+            }
+        });
+    }
+    delete(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = Number(req.params.id);
+            try {
+                if ((0, validators_1.validateValues)([id], { unPositiveNumber: true })) {
+                    return res
+                        .status(constant_1.CODE.BAD_REQUEST)
+                        .json((0, helpers_1.responseData)(null, 'Id is valid', constant_1.CODE.BAD_REQUEST, true));
+                }
+                yield CommentService_1.default.deleteCommentById(id);
+                return res
+                    .status(constant_1.CODE.SUCCESS)
+                    .json((0, helpers_1.responseData)(null, 'Deleted successfully'));
             }
             catch (error) {
                 const err = error;
