@@ -33,6 +33,7 @@
     "@types/node": "^18.16.3",
     "@typescript-eslint/eslint-plugin": "^5.59.2",
     "@typescript-eslint/parser": "^5.59.2",
+    "copyfiles": "^2.4.1",
     "cross-port-killer": "^1.4.0",
     "eslint": "^8.39.0",
     "nodemon": "^2.0.22",
@@ -44,7 +45,7 @@
     "node": ">=14.20.1"
   },
   "scripts": {
-    "build": "npx tsc",
+    "build": "npx tsc && copyfiles -u 1 src/public/**/*.{jpg,jpeg,png,gif,svg} dist",
     "start": "node dist/server.js",
     "dev": "nodemon",
     "watch": "npx tsc -watch",
