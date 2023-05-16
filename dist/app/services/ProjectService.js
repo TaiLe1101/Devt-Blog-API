@@ -42,9 +42,10 @@ class ProjectService {
             try {
                 let thumbnail = null;
                 if (thumbnailFile) {
-                    thumbnail = `${process.env.DOMAIN_ENV}/uploads/user/${thumbnailFile.filename}`;
+                    thumbnail = `${process.env.DOMAIN_ENV}/uploads/projects/${thumbnailFile.filename}`;
                 }
                 else {
+                    thumbnail = `${process.env.DOMAIN_ENV}/default/images/no-image-pro.png`;
                 }
                 const projectResult = yield ProjectRepository_1.default.create(title, thumbnail, categoryId);
                 if (!projectResult) {

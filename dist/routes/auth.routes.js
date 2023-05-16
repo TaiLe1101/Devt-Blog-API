@@ -11,5 +11,5 @@ const upload = (0, multer_1.default)({ dest: 'src/public/uploads/user' });
 router.post('/register', upload.single('avatar'), AuthController_1.default.register);
 router.post('/login', upload.none(), AuthController_1.default.login);
 router.post('/refresh', upload.none(), AuthController_1.default.refreshToken);
-router.post('/logout', upload.none(), AuthController_1.default.logout);
+router.post('/logout', AuthController_1.default.logout);
 exports.default = router;

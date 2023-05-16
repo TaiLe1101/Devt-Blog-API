@@ -17,7 +17,13 @@ const app: Express = express();
 const port = process.env.PORT || 3303;
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors());
+
+app.use(
+    cors({
+        origin: true,
+        credentials: true, //access-control-allow-credentials:true
+    })
+);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());

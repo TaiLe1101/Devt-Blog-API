@@ -76,6 +76,8 @@ class AuthController {
                 httpOnly: true,
                 secure: __PROD__,
                 sameSite: 'lax',
+                path: '/',
+                domain: 'localhost',
                 maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, // 1hour
             });
 
@@ -122,7 +124,9 @@ class AuthController {
             res.cookie('refreshToken', newRefreshToken, {
                 httpOnly: true,
                 secure: __PROD__,
-                sameSite: true,
+                sameSite: 'lax',
+                path: '/',
+                domain: 'localhost',
                 maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, // 1hour
             });
 
@@ -148,6 +152,7 @@ class AuthController {
     async logout(req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken;
         try {
+            console.log('cookie', refreshToken);
             if (isStringEmpty([refreshToken])) {
                 return res
                     .status(CODE.BAD_REQUEST)
