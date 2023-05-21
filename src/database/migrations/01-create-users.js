@@ -28,6 +28,18 @@ module.exports = {
                 allowNull: true,
                 type: Sequelize.STRING,
             },
+            email: {
+                allowNull: true,
+                type: Sequelize.STRING,
+            },
+            address: {
+                allowNull: true,
+                type: Sequelize.STRING,
+            },
+            phoneNumber: {
+                allowNull: true,
+                type: Sequelize.STRING,
+            },
 
             createdAt: {
                 allowNull: false,

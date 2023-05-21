@@ -8,8 +8,11 @@ export interface UserAttributes {
 
     fullName?: string | null;
     username?: string | null;
+    email?: string | null;
     password?: string | null;
     avatar?: string | null;
+    address?: string | null;
+    phoneNumber?: string | null;
 
     createdAt?: Date;
     updatedAt?: Date;
@@ -25,6 +28,9 @@ class User extends Model<UserAttributes, UserInput> implements UserAttributes {
     public username!: string;
     public password!: string;
     public avatar?: string | null | undefined;
+    public email?: string | null | undefined;
+    public address?: string | null | undefined;
+    public phoneNumber?: string | null | undefined;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -38,6 +44,7 @@ User.init(
             primaryKey: true,
             type: DataTypes.BIGINT,
         },
+
         fullName: {
             allowNull: false,
             type: DataTypes.STRING,
@@ -53,6 +60,18 @@ User.init(
         },
         password: {
             allowNull: false,
+            type: DataTypes.STRING,
+        },
+        email: {
+            allowNull: true,
+            type: DataTypes.STRING,
+        },
+        address: {
+            allowNull: true,
+            type: DataTypes.STRING,
+        },
+        phoneNumber: {
+            allowNull: true,
             type: DataTypes.STRING,
         },
     },

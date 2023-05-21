@@ -88,35 +88,55 @@ class UserService {
     async updateUserById(
         id: number,
         fullName: string | null,
-        avatarFile: FileUpload
+        avatarFile: FileUpload,
+        email?: string | null,
+        phoneNumber?: string | null,
+        address?: string | null
     ) {
         try {
             let avatar: string | null = null;
             const user = await userRepository.findById(id);
 
-            if (avatarFile) {
-                fs.unlinkSync(
-                    `src/public/uploads/user/${user?.avatar?.split('/').pop()}`
+            if (!user) {
+                throw responseData(
+                    null,
+                    'User not found',
+                    CODE.NOT_FOUND,
+                    true
                 );
+            }
+
+            if (avatarFile) {
+                if (user.avatar) {
+                    fs.unlinkSync(
+                        `src/public/uploads/user/${user?.avatar
+                            ?.split('/')
+                            .pop()}`
+                    );
+                }
 
                 avatar = `${process.env.DOMAIN_ENV}/uploads/user/${avatarFile.filename}`;
             }
 
-            if (!fullName) {
-                fullName = null;
-            }
+            if (!fullName) fullName = null;
+            if (!email) email = null;
+            if (!phoneNumber) phoneNumber = null;
+            if (!address) address = null;
 
             const updatedUser = await userRepository.updateById(
                 id,
                 fullName,
-                avatar
+                avatar,
+                email,
+                phoneNumber,
+                address
             );
 
             if (!updatedUser) {
                 throw responseData(
                     null,
-                    'User not found',
-                    CODE.NOT_FOUND,
+                    'Update failed',
+                    CODE.BAD_REQUEST,
                     true
                 );
             }

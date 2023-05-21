@@ -4,7 +4,7 @@ import { responseData } from '../../helpers';
 import { CODE } from '../../constant';
 import ThrowResponse from '../../types/ThrowResponse';
 import { RequestMiddleware } from '../../types/RequestMiddleware';
-import { validateValues } from '../../validators';
+import { isEmail, validateValues } from '../../validators';
 
 class UserController {
     async index(req: Request, res: Response) {
@@ -71,20 +71,41 @@ class UserController {
     }
 
     async update(req: RequestMiddleware, res: Response) {
-        const fullName = req.body.fullName;
+        const email: string = req.body.email;
+        const address: string = req.body.address;
+        const phoneNumber: string = req.body.phoneNumber;
+        const fullName: string = req.body.fullName;
         const avatarFile = req.file;
         const id = Number(req.user?.id);
 
         try {
+            if (!isEmail(email)) {
+                return res
+                    .status(CODE.BAD_REQUEST)
+                    .json(
+                        responseData(
+                            null,
+                            'Email is valid',
+                            CODE.BAD_REQUEST,
+                            true
+                        )
+                    );
+            }
+
             const result = await userService.updateUserById(
                 id,
                 fullName,
-                avatarFile
+                avatarFile,
+                email,
+                phoneNumber,
+                address
             );
 
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { password, ...other } = result.dataValues;
             return res
                 .status(CODE.SUCCESS)
-                .json(responseData(result, 'Updated successfully'));
+                .json(responseData({ ...other }, 'Updated successfully'));
         } catch (error) {
             const err = error as ThrowResponse;
             return res

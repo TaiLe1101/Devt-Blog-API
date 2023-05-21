@@ -39,7 +39,10 @@ class UserRepository {
     async updateById(
         id: number,
         fullName: string | null,
-        avatar: string | null
+        avatar: string | null,
+        email?: string | null,
+        phoneNumber?: string | null,
+        address?: string | null
     ) {
         const user = await User.findOne({ where: { id } });
 
@@ -48,11 +51,17 @@ class UserRepository {
 
         if (fullName !== null) fields?.push('fullName');
         if (avatar !== null) fields?.push('avatar');
+        if (email !== null) fields?.push('email');
+        if (phoneNumber !== null) fields?.push('phoneNumber');
+        if (address !== null) fields?.push('address');
 
-        const updatedUser = user?.update(
+        const updatedUser = await user?.update(
             {
                 fullName,
                 avatar,
+                email,
+                phoneNumber,
+                address,
             },
             {
                 fields,
