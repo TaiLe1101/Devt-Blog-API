@@ -79,22 +79,32 @@ class UserService {
             }
         });
     }
-    updateUserById(id, fullName, avatarFile) {
+    updateUserById(id, fullName, avatarFile, email, phoneNumber, address) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let avatar = null;
                 const user = yield UserRepository_1.default.findById(id);
+                if (!user) {
+                    throw (0, helpers_1.responseData)(null, 'User not found', constant_1.CODE.NOT_FOUND, true);
+                }
                 if (avatarFile) {
-                    fs_1.default.unlinkSync(`src/public/uploads/user/${(_a = user === null || user === void 0 ? void 0 : user.avatar) === null || _a === void 0 ? void 0 : _a.split('/').pop()}`);
+                    if (user.avatar) {
+                        fs_1.default.unlinkSync(`src/public/uploads/user/${(_a = user === null || user === void 0 ? void 0 : user.avatar) === null || _a === void 0 ? void 0 : _a.split('/').pop()}`);
+                    }
                     avatar = `${process.env.DOMAIN_ENV}/uploads/user/${avatarFile.filename}`;
                 }
-                if (!fullName) {
+                if (!fullName)
                     fullName = null;
-                }
-                const updatedUser = yield UserRepository_1.default.updateById(id, fullName, avatar);
+                if (!email)
+                    email = null;
+                if (!phoneNumber)
+                    phoneNumber = null;
+                if (!address)
+                    address = null;
+                const updatedUser = yield UserRepository_1.default.updateById(id, fullName, avatar, email, phoneNumber, address);
                 if (!updatedUser) {
-                    throw (0, helpers_1.responseData)(null, 'User not found', constant_1.CODE.NOT_FOUND, true);
+                    throw (0, helpers_1.responseData)(null, 'Update failed', constant_1.CODE.BAD_REQUEST, true);
                 }
                 return updatedUser;
             }

@@ -8,6 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -58,14 +69,24 @@ class UserController {
     update(req, res) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
+            const email = req.body.email;
+            const address = req.body.address;
+            const phoneNumber = req.body.phoneNumber;
             const fullName = req.body.fullName;
             const avatarFile = req.file;
             const id = Number((_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
             try {
-                const result = yield UserService_1.default.updateUserById(id, fullName, avatarFile);
+                if (!(0, validators_1.isEmail)(email)) {
+                    return res
+                        .status(constant_1.CODE.BAD_REQUEST)
+                        .json((0, helpers_1.responseData)(null, 'Email is valid', constant_1.CODE.BAD_REQUEST, true));
+                }
+                const result = yield UserService_1.default.updateUserById(id, fullName, avatarFile, email, phoneNumber, address);
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const _b = result.dataValues, { password } = _b, other = __rest(_b, ["password"]);
                 return res
                     .status(constant_1.CODE.SUCCESS)
-                    .json((0, helpers_1.responseData)(result, 'Updated successfully'));
+                    .json((0, helpers_1.responseData)(Object.assign({}, other), 'Updated successfully'));
             }
             catch (error) {
                 const err = error;

@@ -50,7 +50,7 @@ class UserRepository {
             return deletedRow;
         });
     }
-    updateById(id, fullName, avatar) {
+    updateById(id, fullName, avatar, email, phoneNumber, address) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield Users_1.default.findOne({ where: { id } });
             const fields = [];
@@ -58,12 +58,21 @@ class UserRepository {
                 fields === null || fields === void 0 ? void 0 : fields.push('fullName');
             if (avatar !== null)
                 fields === null || fields === void 0 ? void 0 : fields.push('avatar');
-            const updatedUser = user === null || user === void 0 ? void 0 : user.update({
+            if (email !== null)
+                fields === null || fields === void 0 ? void 0 : fields.push('email');
+            if (phoneNumber !== null)
+                fields === null || fields === void 0 ? void 0 : fields.push('phoneNumber');
+            if (address !== null)
+                fields === null || fields === void 0 ? void 0 : fields.push('address');
+            const updatedUser = yield (user === null || user === void 0 ? void 0 : user.update({
                 fullName,
                 avatar,
+                email,
+                phoneNumber,
+                address,
             }, {
                 fields,
-            });
+            }));
             return updatedUser;
         });
     }

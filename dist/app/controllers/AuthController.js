@@ -70,6 +70,8 @@ class AuthController {
                     httpOnly: true,
                     secure: constant_1.__PROD__,
                     sameSite: 'lax',
+                    path: '/',
+                    domain: 'localhost',
                     maxAge: constant_1.DATE.MILLISECOND * constant_1.DATE.SECOND * constant_1.DATE.MINUTES, // 1hour
                 });
                 return res
@@ -98,6 +100,8 @@ class AuthController {
                     httpOnly: true,
                     secure: constant_1.__PROD__,
                     sameSite: 'lax',
+                    path: '/',
+                    domain: 'localhost',
                     maxAge: constant_1.DATE.MILLISECOND * constant_1.DATE.SECOND * constant_1.DATE.MINUTES, // 1hour
                 });
                 return res
@@ -116,6 +120,7 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             const refreshToken = req.cookies.refreshToken;
             try {
+                console.log('cookie', refreshToken);
                 if ((0, validators_1.isStringEmpty)([refreshToken])) {
                     return res
                         .status(constant_1.CODE.BAD_REQUEST)

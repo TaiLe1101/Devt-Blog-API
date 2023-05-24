@@ -29,6 +29,18 @@ User.init({
         allowNull: false,
         type: sequelize_1.DataTypes.STRING,
     },
+    email: {
+        allowNull: true,
+        type: sequelize_1.DataTypes.STRING,
+    },
+    address: {
+        allowNull: true,
+        type: sequelize_1.DataTypes.STRING,
+    },
+    phoneNumber: {
+        allowNull: true,
+        type: sequelize_1.DataTypes.STRING,
+    },
 }, {
     timestamps: true,
     sequelize: connectDb_1.sequelize,
