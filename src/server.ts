@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
     cors({
-        origin: true,
+        origin: process.env.ORIGIN as string,
         credentials: true, //access-control-allow-credentials:true
     })
 );
