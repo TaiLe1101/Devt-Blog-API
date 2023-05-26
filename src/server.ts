@@ -21,6 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
     cors({
+        origin: true,
         credentials: true, //access-control-allow-credentials:true
     })
 );

@@ -20,6 +20,7 @@ const app = (0, express_1.default)();
 const port = process_1.default.env.PORT || 3303;
 app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
 app.use((0, cors_1.default)({
+    origin: true,
     credentials: true, //access-control-allow-credentials:true
 }));
 app.use(body_parser_1.default.urlencoded({ extended: false }));
