@@ -92,7 +92,7 @@ class UserService {
                     if (user.avatar) {
                         fs_1.default.unlinkSync(`src/public/uploads/user/${(_a = user === null || user === void 0 ? void 0 : user.avatar) === null || _a === void 0 ? void 0 : _a.split('/').pop()}`);
                     }
-                    avatar = `${process.env.DOMAIN_ENV}/uploads/user/${avatarFile.filename}`;
+                    avatar = `${process.env.DOMAIN_BE}/uploads/user/${avatarFile.filename}`;
                 }
                 if (!fullName)
                     fullName = null;

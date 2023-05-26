@@ -35,9 +35,9 @@ class ProjectService {
             let thumbnail: string | null = null;
 
             if (thumbnailFile) {
-                thumbnail = `${process.env.DOMAIN_ENV}/uploads/projects/${thumbnailFile.filename}`;
+                thumbnail = `${process.env.DOMAIN_BE}/uploads/projects/${thumbnailFile.filename}`;
             } else {
-                thumbnail = `${process.env.DOMAIN_ENV}/default/images/no-image-pro.png`;
+                thumbnail = `${process.env.DOMAIN_BE}/default/images/no-image-pro.png`;
             }
 
             const projectResult = await ProjectRepository.create(
