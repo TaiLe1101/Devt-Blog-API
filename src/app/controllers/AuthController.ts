@@ -76,8 +76,6 @@ class AuthController {
                 httpOnly: true,
                 secure: __PROD__,
                 sameSite: 'lax',
-                path: '/',
-                domain: process.env.DOMAIN_FE as string,
                 maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, // 1hour
             });
 
@@ -125,8 +123,6 @@ class AuthController {
                 httpOnly: true,
                 secure: __PROD__,
                 sameSite: 'lax',
-                path: '/',
-                domain: process.env.DOMAIN_FE as string,
                 maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, // 1hour
             });
 
