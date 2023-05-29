@@ -46,12 +46,11 @@
     "node": ">=14.20.1"
   },
   "scripts": {
+    "start:dev": "nodemon",
     "build:dev": "npx tsc && copyfiles -u 1 src/public/**/*.{jpg,jpeg,png,gif,svg} dist",
     "build": "tsc",
-    "start": "ts-node src/server.ts",
-    "dev": "nodemon",
+    "start": "node dist/server.js",
     "watch": "npx tsc -watch",
-    "lint": "eslint ./src",
-    "vercel-build": "echo hello"
+    "lint": "eslint ./src"
   }
 }
