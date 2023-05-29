@@ -72,10 +72,7 @@ class AuthController {
                     secure: constant_1.__PROD__,
                     sameSite: 'none',
                     maxAge: constant_1.DATE.MILLISECOND * constant_1.DATE.SECOND * constant_1.DATE.MINUTES,
-                    domain: req.headers.origin,
-                    // domain: '.',
-                    // domain: process.env.HOST_FE,
-                    path: '/',
+                    domain: process.env.HOST_FE,
                 })
                     .status(constant_1.CODE.SUCCESS)
                     .json((0, helpers_1.responseData)(others, 'Login successfully', constant_1.CODE.SUCCESS, false));
@@ -104,9 +101,7 @@ class AuthController {
                     secure: constant_1.__PROD__,
                     sameSite: 'none',
                     maxAge: constant_1.DATE.MILLISECOND * constant_1.DATE.SECOND * constant_1.DATE.MINUTES,
-                    // domain: process.env.HOST_FE,
-                    domain: req.headers.origin,
-                    path: '/',
+                    domain: process.env.HOST_FE,
                 })
                     .status(constant_1.CODE.SUCCESS)
                     .json((0, helpers_1.responseData)({ accessToken: newAccessToken }, 'Refresh successfully'));

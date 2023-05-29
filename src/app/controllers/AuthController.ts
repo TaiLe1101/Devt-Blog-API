@@ -78,10 +78,7 @@ class AuthController {
                     secure: __PROD__,
                     sameSite: 'none',
                     maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, //1hour
-                    domain: req.headers.origin,
-                    // domain: '.',
-                    // domain: process.env.HOST_FE,
-                    path: '/',
+                    domain: process.env.HOST_FE,
                 })
                 .status(CODE.SUCCESS)
                 .json(
@@ -128,9 +125,7 @@ class AuthController {
                     secure: __PROD__,
                     sameSite: 'none',
                     maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, // 1hour
-                    // domain: process.env.HOST_FE,
-                    domain: req.headers.origin,
-                    path: '/',
+                    domain: process.env.HOST_FE,
                 })
                 .status(CODE.SUCCESS)
                 .json(
