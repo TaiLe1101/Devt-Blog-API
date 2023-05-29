@@ -10,6 +10,7 @@ import route from './routes';
 import connectDb from './configs/connectDb';
 import logger from './helpers/logger';
 import connectCookieStore from './configs/connectCookieStore';
+import logENV from './helpers/logENV';
 
 dotenv.config();
 
@@ -32,6 +33,8 @@ connectDb();
 connectCookieStore();
 
 route(app);
+
+logENV();
 
 app.listen(port, () => {
     logger.info(`⚡️[server]: Server is running at http://localhost:${port}`);
