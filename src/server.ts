@@ -22,10 +22,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
     cors({
-        origin: process.env.FE_ORIGIN,
+        origin: (process.env.FE_ORIGIN as string).split(','),
         credentials: true, //access-control-allow-credentials:true
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
     })
 );
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
