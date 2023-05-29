@@ -79,6 +79,7 @@ class AuthController {
                     sameSite: 'none',
                     maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, //1hour
                     domain: process.env.HOST_FE,
+                    path: '/',
                 })
                 .status(CODE.SUCCESS)
                 .json(
@@ -126,6 +127,7 @@ class AuthController {
                     sameSite: 'none',
                     maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, // 1hour
                     domain: process.env.HOST_FE,
+                    path: '/',
                 })
                 .status(CODE.SUCCESS)
                 .json(
