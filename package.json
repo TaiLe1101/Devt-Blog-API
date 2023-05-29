@@ -48,10 +48,10 @@
   "scripts": {
     "build:dev": "npx tsc && copyfiles -u 1 src/public/**/*.{jpg,jpeg,png,gif,svg} dist",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "ts-node src/server.ts",
     "dev": "nodemon",
     "watch": "npx tsc -watch",
     "lint": "eslint ./src",
-    "deploy": "vercel"
+    "vercel-build": "echo hello"
   }
 }

@@ -47,3 +47,5 @@ app.get('/', (req: Request, res: Response) => {
 app.listen(port, () => {
     logger.info(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
+
+export default app;
