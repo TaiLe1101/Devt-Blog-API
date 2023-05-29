@@ -15,6 +15,7 @@ const connectDb_1 = __importDefault(require("./configs/connectDb"));
 const logger_1 = __importDefault(require("./helpers/logger"));
 const connectCookieStore_1 = __importDefault(require("./configs/connectCookieStore"));
 const logENV_1 = __importDefault(require("./helpers/logENV"));
+const helpers_1 = require("./helpers");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process_1.default.env.PORT || 3303;
@@ -30,6 +31,9 @@ app.use((0, cookie_parser_1.default)());
 (0, connectCookieStore_1.default)();
 (0, routes_1.default)(app);
 (0, logENV_1.default)();
+app.get('/', (req, res) => {
+    res.status(200).json((0, helpers_1.responseData)(null, 'Connect to server successfully'));
+});
 app.listen(port, () => {
     logger_1.default.info(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
