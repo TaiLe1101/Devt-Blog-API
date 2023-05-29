@@ -51,6 +51,7 @@
     "start": "node dist/server.js",
     "dev": "nodemon",
     "watch": "npx tsc -watch",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src",
+    "deploy": "vercel"
   }
 }
