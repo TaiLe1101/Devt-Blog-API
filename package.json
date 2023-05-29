@@ -47,7 +47,7 @@
   },
   "scripts": {
     "build:dev": "npx tsc && copyfiles -u 1 src/public/**/*.{jpg,jpeg,png,gif,svg} dist",
-    "build": "npx tsc",
+    "build": "tsc",
     "start": "node dist/server.js",
     "dev": "nodemon",
     "watch": "npx tsc -watch",
