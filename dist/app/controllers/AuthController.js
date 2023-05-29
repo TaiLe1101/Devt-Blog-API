@@ -72,7 +72,8 @@ class AuthController {
                     secure: constant_1.__PROD__,
                     sameSite: 'none',
                     maxAge: constant_1.DATE.MILLISECOND * constant_1.DATE.SECOND * constant_1.DATE.MINUTES,
-                    domain: process.env.HOST_FE,
+                    domain: '.',
+                    // domain: process.env.HOST_FE,
                     path: '/',
                 })
                     .status(constant_1.CODE.SUCCESS)
@@ -102,7 +103,8 @@ class AuthController {
                     secure: constant_1.__PROD__,
                     sameSite: 'none',
                     maxAge: constant_1.DATE.MILLISECOND * constant_1.DATE.SECOND * constant_1.DATE.MINUTES,
-                    domain: process.env.HOST_FE,
+                    // domain: process.env.HOST_FE,
+                    domain: '.',
                     path: '/',
                 })
                     .status(constant_1.CODE.SUCCESS)
