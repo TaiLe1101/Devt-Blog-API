@@ -3,7 +3,7 @@
     "builds": [
         {
             "src": "/src/server.ts",
-            "use": "@vercel/node@1.9.1",
+            "use": "@vercel/node",
             "config": {
                 "includeFiles": "/src/**"
             }
