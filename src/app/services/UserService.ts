@@ -115,7 +115,7 @@ class UserService {
                     );
                 }
 
-                avatar = `${process.env.DOMAIN_BE}/uploads/user/${avatarFile.filename}`;
+                avatar = `${process.env.BE_ORIGIN}/uploads/user/${avatarFile.filename}`;
             }
 
             if (!fullName) fullName = null;

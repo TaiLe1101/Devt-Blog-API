@@ -72,14 +72,14 @@ class AuthController {
             const user = await authService.userLogin(username, password);
             const { refreshToken, ...others } = user;
 
-            res.cookie('refreshToken', refreshToken, {
-                httpOnly: true,
-                secure: __PROD__,
-                sameSite: 'lax',
-                maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, // 1hour
-            });
-
             return res
+                .cookie('refreshToken', refreshToken, {
+                    httpOnly: true,
+                    secure: __PROD__,
+                    sameSite: 'lax',
+                    maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, //1hour
+                    domain: process.env.HOST_FE,
+                })
                 .status(CODE.SUCCESS)
                 .json(
                     responseData(
@@ -119,14 +119,14 @@ class AuthController {
             const { newAccessToken, newRefreshToken } =
                 await authService.refreshToken(refreshToken);
 
-            res.cookie('refreshToken', newRefreshToken, {
-                httpOnly: true,
-                secure: __PROD__,
-                sameSite: 'lax',
-                maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, // 1hour
-            });
-
             return res
+                .cookie('refreshToken', newRefreshToken, {
+                    httpOnly: true,
+                    secure: __PROD__,
+                    sameSite: 'lax',
+                    maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, // 1hour
+                    domain: process.env.HOST_FE,
+                })
                 .status(CODE.SUCCESS)
                 .json(
                     responseData(
@@ -162,11 +162,10 @@ class AuthController {
                     );
             }
 
-            res.clearCookie('refreshToken');
-
             await authService.userLogout(refreshToken);
 
             return res
+                .clearCookie('refreshToken')
                 .status(CODE.SUCCESS)
                 .json(responseData(null, 'Logout successfully'));
         } catch (error) {

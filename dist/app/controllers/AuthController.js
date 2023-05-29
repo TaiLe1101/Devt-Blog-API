@@ -66,13 +66,14 @@ class AuthController {
                 }
                 const user = yield AuthService_1.default.userLogin(username, password);
                 const { refreshToken } = user, others = __rest(user, ["refreshToken"]);
-                res.cookie('refreshToken', refreshToken, {
+                return res
+                    .cookie('refreshToken', refreshToken, {
                     httpOnly: true,
                     secure: constant_1.__PROD__,
                     sameSite: 'lax',
-                    maxAge: constant_1.DATE.MILLISECOND * constant_1.DATE.SECOND * constant_1.DATE.MINUTES, // 1hour
-                });
-                return res
+                    maxAge: constant_1.DATE.MILLISECOND * constant_1.DATE.SECOND * constant_1.DATE.MINUTES,
+                    domain: process.env.HOST_FE,
+                })
                     .status(constant_1.CODE.SUCCESS)
                     .json((0, helpers_1.responseData)(others, 'Login successfully', constant_1.CODE.SUCCESS, false));
             }
@@ -94,13 +95,14 @@ class AuthController {
                         .json((0, helpers_1.responseData)(null, 'RefreshToken not found', constant_1.CODE.BAD_REQUEST, true));
                 }
                 const { newAccessToken, newRefreshToken } = yield AuthService_1.default.refreshToken(refreshToken);
-                res.cookie('refreshToken', newRefreshToken, {
+                return res
+                    .cookie('refreshToken', newRefreshToken, {
                     httpOnly: true,
                     secure: constant_1.__PROD__,
                     sameSite: 'lax',
-                    maxAge: constant_1.DATE.MILLISECOND * constant_1.DATE.SECOND * constant_1.DATE.MINUTES, // 1hour
-                });
-                return res
+                    maxAge: constant_1.DATE.MILLISECOND * constant_1.DATE.SECOND * constant_1.DATE.MINUTES,
+                    domain: process.env.HOST_FE,
+                })
                     .status(constant_1.CODE.SUCCESS)
                     .json((0, helpers_1.responseData)({ accessToken: newAccessToken }, 'Refresh successfully'));
             }
@@ -122,9 +124,9 @@ class AuthController {
                         .status(constant_1.CODE.BAD_REQUEST)
                         .json((0, helpers_1.responseData)(null, 'You are not logged in', constant_1.CODE.BAD_REQUEST, true));
                 }
-                res.clearCookie('refreshToken');
                 yield AuthService_1.default.userLogout(refreshToken);
                 return res
+                    .clearCookie('refreshToken')
                     .status(constant_1.CODE.SUCCESS)
                     .json((0, helpers_1.responseData)(null, 'Logout successfully'));
             }
