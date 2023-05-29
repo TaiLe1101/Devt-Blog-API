@@ -76,7 +76,7 @@ class AuthController {
                 .cookie('refreshToken', refreshToken, {
                     httpOnly: true,
                     secure: __PROD__,
-                    sameSite: 'lax',
+                    sameSite: 'none',
                     maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, //1hour
                     domain: process.env.HOST_FE,
                 })
@@ -123,7 +123,7 @@ class AuthController {
                 .cookie('refreshToken', newRefreshToken, {
                     httpOnly: true,
                     secure: __PROD__,
-                    sameSite: 'lax',
+                    sameSite: 'none',
                     maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, // 1hour
                     domain: process.env.HOST_FE,
                 })
