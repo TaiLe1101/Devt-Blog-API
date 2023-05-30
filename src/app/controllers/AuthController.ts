@@ -74,11 +74,11 @@ class AuthController {
 
             return res
                 .cookie('refreshToken', refreshToken, {
+                    domain: process.env.HOST_FE as string,
                     httpOnly: true,
                     secure: __PROD__,
                     sameSite: 'none',
                     maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, //1hour
-                    domain: process.env.HOST_FE,
                 })
                 .status(CODE.SUCCESS)
                 .json(
@@ -121,11 +121,11 @@ class AuthController {
 
             return res
                 .cookie('refreshToken', newRefreshToken, {
+                    domain: process.env.HOST_FE as string,
                     httpOnly: true,
                     secure: __PROD__,
                     sameSite: 'none',
                     maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, // 1hour
-                    domain: process.env.HOST_FE,
                 })
                 .status(CODE.SUCCESS)
                 .json(
