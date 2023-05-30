@@ -38,7 +38,9 @@
     "cross-port-killer": "^1.4.0",
     "eslint": "^8.39.0",
     "nodemon": "^2.0.22",
+    "pre-commit": "^1.2.2",
     "prettier": "^2.8.8",
+    "rimraf": "^5.0.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   },
@@ -46,11 +48,17 @@
     "node": ">=14.20.1"
   },
   "scripts": {
-    "start:dev": "nodemon",
     "build:dev": "npx tsc && copyfiles -u 1 src/public/**/*.{jpg,jpeg,png,gif,svg} dist",
-    "build": "tsc",
-    "start": "ts-node src/server.ts",
+    "build": "rimraf dist && tsc",
+    "ts.check": "tsc --project tsconfig.json",
+    "add-build": "git add dist",
+    "start": "nodemon src/server.ts",
     "watch": "npx tsc -watch",
     "lint": "eslint ./src"
-  }
+  },
+  "pre-commit": [
+    "ts.check",
+    "build",
+    "add-build"
+  ]
 }
