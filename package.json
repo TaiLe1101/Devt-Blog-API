@@ -41,9 +41,6 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   },
-  "engines": {
-    "node": ">=14.20.1"
-  },
   "scripts": {
     "build:dev": "npx tsc && copyfiles -u 1 src/public/**/*.{jpg,jpeg,png,gif,svg} dist",
     "build": "tsc",
