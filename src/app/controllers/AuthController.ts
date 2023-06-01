@@ -74,7 +74,7 @@ class AuthController {
 
             return res
                 .cookie('refreshToken', refreshToken, {
-                    domain: process.env.HOST_FE as string,
+                    // domain: process.env.HOST_FE as string,
                     httpOnly: true,
                     secure: __PROD__,
                     sameSite: 'none',
@@ -121,7 +121,7 @@ class AuthController {
 
             return res
                 .cookie('refreshToken', newRefreshToken, {
-                    domain: process.env.HOST_FE as string,
+                    // domain: process.env.HOST_FE as string,
                     httpOnly: true,
                     secure: __PROD__,
                     sameSite: 'none',
