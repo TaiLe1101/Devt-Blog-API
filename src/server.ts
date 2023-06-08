@@ -45,10 +45,6 @@ app.get('/', (req: Request, res: Response) => {
     res.status(200).json(responseData(null, 'Connect to server successfully'));
 });
 
-app.get('*', (req: Request, res: Response) => {
-    res.status(200).json(responseData(null, 'Connect to server successfully'));
-});
-
 app.listen(port, () => {
     logger.info(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
