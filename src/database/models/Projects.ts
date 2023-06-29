@@ -9,6 +9,7 @@ export interface ProjectAttributes {
 
     title?: string | null;
     thumbnail?: string | null;
+    path?: string | null;
 
     categoryId?: number | null;
 
@@ -26,7 +27,8 @@ class Project
 {
     public id!: number;
     public title!: string;
-    public thumbnail?: string | null | undefined;
+    public thumbnail!: string | null | undefined;
+    public path!: string | null | undefined;
 
     public categoryId!: number;
 
@@ -51,7 +53,10 @@ Project.init(
             allowNull: false,
             type: DataTypes.STRING,
         },
-
+        path: {
+            allowNull: false,
+            type: DataTypes.STRING,
+        },
         categoryId: {
             allowNull: false,
             type: DataTypes.BIGINT,
