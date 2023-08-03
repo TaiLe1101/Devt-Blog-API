@@ -1,31 +1,8 @@
-import User from '../../database/models/Users';
+import User, { UserAttributes } from '../../database/models/Users';
 
 class AuthRepository {
-    async register(
-        fullName: string,
-        username: string,
-        password: string,
-        avatar?: string | null
-    ) {
-        const user = await User.create({
-            fullName,
-            username,
-            password,
-            avatar,
-        });
-
-        return user;
-    }
-
-    async login(username: string, password: string) {
-        const user = await User.findOne({
-            where: {
-                username,
-                password,
-            },
-        });
-
-        return user;
+    async createUser(payload: UserAttributes) {
+        return await User.create(payload);
     }
 }
 

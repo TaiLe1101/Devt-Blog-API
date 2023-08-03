@@ -12,25 +12,24 @@ module.exports = {
             },
 
             title: {
-                allowNull: true,
+                allowNull: false,
                 type: Sequelize.STRING,
             },
             content: {
-                allowNull: true,
-                type: Sequelize.STRING,
+                type: Sequelize.TEXT('long'),
             },
             thumbnail: {
-                allowNull: true,
                 type: Sequelize.STRING,
+                defaultValue: null,
             },
 
             createdAt: {
-                allowNull: false,
                 type: Sequelize.DATE,
+                defaultValue: new Date(),
             },
             updatedAt: {
-                allowNull: false,
                 type: Sequelize.DATE,
+                defaultValue: new Date(),
             },
         });
 

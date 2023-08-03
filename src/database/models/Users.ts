@@ -8,7 +8,7 @@ export interface UserAttributes {
 
     fullName?: string | null;
     username?: string | null;
-    email?: string | null;
+    email?: string;
     password?: string | null;
     avatar?: string | null;
     address?: string | null;
@@ -27,10 +27,10 @@ class User extends Model<UserAttributes, UserInput> implements UserAttributes {
     public fullName!: string;
     public username!: string;
     public password!: string;
-    public avatar?: string | null | undefined;
-    public email?: string | null | undefined;
-    public address?: string | null | undefined;
-    public phoneNumber?: string | null | undefined;
+    public email!: string;
+    public avatar!: string;
+    public address!: string;
+    public phoneNumber!: string;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;

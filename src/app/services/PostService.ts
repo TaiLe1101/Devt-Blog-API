@@ -1,88 +1,69 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { CODE, __PROD__ } from '../../constant';
-import { responseData } from '../../helpers';
+import { Server } from '../../constants';
+import { HttpException, HttpServerException } from '../../exceptions';
 import logger from '../../helpers/logger';
+import { CreatePostPayload } from '../../payloads';
 import postRepository from '../repositories/PostRepository';
 
 class PostService {
     async getAllPosts() {
         try {
-            const posts = await postRepository.getAll();
-
-            if (!posts) {
-                throw responseData(
-                    null,
-                    "Can't get posts",
-                    CODE.NOT_FOUND,
-                    true
-                );
-            }
+            const posts = await postRepository.findAll();
 
             return posts;
-        } catch (error: any) {
-            if (error.status) {
-                throw error;
+        } catch (error) {
+            const err = error as HttpException;
+            if (typeof err.getStatusCode() === 'function') {
+                throw err;
             }
-            if (!__PROD__) logger.error(error.message);
 
-            throw responseData(null, 'Server', CODE.SERVER, true);
+            if (!Server.__PROD__) logger.error(error);
+            throw new HttpServerException();
         }
     }
 
     async getPostById(id: number) {
         try {
-            const post = await postRepository.getById(id);
+            const post = await postRepository.findOneById(id);
 
             if (!post) {
-                throw responseData(
-                    null,
-                    'Post not found',
-                    CODE.NOT_FOUND,
-                    true
-                );
+                throw new HttpException('Post is not exists');
             }
 
             return post;
-        } catch (error: any) {
-            if (error.status) {
-                throw error;
+        } catch (error) {
+            const err = error as HttpException;
+            if (typeof err.getStatusCode() === 'function') {
+                throw err;
             }
-            if (!__PROD__) logger.error(error.message);
 
-            throw responseData(null, 'Server', CODE.SERVER, true);
+            if (!Server.__PROD__) logger.error(error);
+            throw new HttpServerException();
         }
     }
 
-    async createPost(
-        title: string,
-        content: string,
-        thumbnail: string,
-        userId: number
-    ) {
+    async createPost(userId: number, payload: CreatePostPayload) {
         try {
-            const createdPost = await postRepository.create(
-                title,
-                content,
-                thumbnail,
-                userId
-            );
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+            const createdPost = await postRepository.create({
+                content: payload.content,
+                title: payload.title,
+                userId,
+            });
 
             if (!createdPost) {
-                throw responseData(
-                    null,
-                    "Can't create post",
-                    CODE.NOT_FOUND,
-                    true
-                );
+                throw new HttpException();
             }
 
             return createdPost;
-        } catch (error: any) {
-            if (error.status) {
-                throw error;
+        } catch (error) {
+            const err = error as HttpException;
+            if (typeof err.getStatusCode() === 'function') {
+                throw err;
             }
-            if (!__PROD__) logger.error(error.message);
-            throw responseData(null, 'Server', CODE.SERVER, true);
+
+            if (!Server.__PROD__) logger.error(error);
+            throw new HttpServerException();
         }
     }
 }

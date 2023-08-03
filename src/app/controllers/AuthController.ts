@@ -1,102 +1,78 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 
-import { responseData } from '../../helpers';
-import ThrowResponse from '../../types/ThrowResponse';
-import { CODE, DATE, __PROD__ } from '../../constant';
-import authService from '../services/AuthService';
+import { HttpStatus, Server, Token } from '../../constants';
+import {
+    HttpException,
+    HttpUnAuthorizedException,
+    HttpValidateException,
+} from '../../exceptions';
+import { ResponseData } from '../../global/responses';
+import { LoginPayload, RegisterPayload } from '../../payloads';
 import { isMinLength, isStringEmpty, validateValues } from '../../validators';
+import authService from '../services/AuthService';
 
 class AuthController {
-    async register(req: Request, res: Response) {
-        const fullName: string = req.body.fullName;
-        const username: string = req.body.username;
-        const password: string = req.body.password;
+    async register(req: Request<RegisterPayload>, res: Response) {
+        const { fullName, password, username } = req.body;
 
         try {
             if (
                 validateValues([fullName, username, password]) ||
                 !isMinLength(password, 6)
             ) {
-                return res
-                    .status(CODE.BAD_REQUEST)
-                    .json(
-                        responseData(
-                            null,
-                            'Value is valid',
-                            CODE.BAD_REQUEST,
-                            true
-                        )
-                    );
+                throw new HttpValidateException();
             }
 
-            const newUser = await authService.userRegister(
+            const newUser = await authService.userRegister({
                 fullName,
+                password,
                 username,
-                password
-            );
-            return res
-                .status(CODE.SUCCESS)
-                .json(responseData(newUser, 'Register successfully'));
-        } catch (error) {
-            const err = error as ThrowResponse;
+            });
 
             return res
-                .status(err.status)
-                .json(
-                    responseData(err.data, err.message, err.status, err.error)
-                );
+                .status(HttpStatus.SUCCESS)
+                .json(new ResponseData(newUser));
+        } catch (error) {
+            const err = error as HttpException;
+
+            return res
+                .status(err.getStatusCode())
+                .json(new HttpException(err.getMessage(), err.getStatusCode()));
         }
     }
 
-    async login(req: Request, res: Response) {
-        const username: string = req.body.username;
-        const password: string = req.body.password;
+    async login(req: Request<LoginPayload>, res: Response) {
+        const { username, password } = req.body;
 
         try {
             if (
                 validateValues([username, password]) ||
                 !isMinLength(password, 6)
             ) {
-                return res
-                    .status(CODE.BAD_REQUEST)
-                    .json(
-                        responseData(
-                            null,
-                            'User name or password is valid',
-                            CODE.BAD_REQUEST,
-                            true
-                        )
-                    );
+                throw new HttpValidateException();
             }
 
-            const user = await authService.userLogin(username, password);
+            const user = await authService.userLogin({ username, password });
             const { refreshToken, ...others } = user;
-
+            const MILLISECOND = 1000;
+            const SECOND = 60;
+            const MINUTES = 60;
             return res
-                .cookie('refreshToken', refreshToken, {
-                    // domain: process.env.HOST_FE as string,
+                .cookie(Token.REFRESH_TOKEN, refreshToken, {
                     httpOnly: true,
-                    secure: __PROD__,
+                    secure: Boolean(Server.__PROD__),
                     sameSite: 'none',
-                    maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, //1hour
+                    maxAge: MILLISECOND * SECOND * MINUTES, //1hour
                 })
-                .status(CODE.SUCCESS)
-                .json(
-                    responseData(
-                        others,
-                        'Login successfully',
-                        CODE.SUCCESS,
-                        false
-                    )
-                );
+                .status(HttpStatus.SUCCESS)
+                .json(new ResponseData(others));
         } catch (error) {
-            const err = error as ThrowResponse;
+            const err = error as HttpException;
 
             return res
-                .status(err.status)
-                .json(
-                    responseData(err.data, err.message, err.status, err.error)
-                );
+                .status(err.getStatusCode())
+                .json(new HttpException(err.getMessage(), err.getStatusCode()));
         }
     }
 
@@ -104,78 +80,54 @@ class AuthController {
         const refreshToken: string = req.cookies.refreshToken;
         try {
             if (isStringEmpty([refreshToken])) {
-                return res
-                    .status(CODE.BAD_REQUEST)
-                    .json(
-                        responseData(
-                            null,
-                            'RefreshToken not found',
-                            CODE.BAD_REQUEST,
-                            true
-                        )
-                    );
+                throw new HttpValidateException();
             }
 
             const { newAccessToken, newRefreshToken } =
                 await authService.refreshToken(refreshToken);
-
+            const MILLISECOND = 1000;
+            const SECOND = 60;
+            const MINUTES = 60;
             return res
-                .cookie('refreshToken', newRefreshToken, {
-                    // domain: process.env.HOST_FE as string,
+                .cookie(Token.REFRESH_TOKEN, newRefreshToken, {
                     httpOnly: true,
-                    secure: __PROD__,
+                    secure: Boolean(Server.__PROD__),
                     sameSite: 'none',
-                    maxAge: DATE.MILLISECOND * DATE.SECOND * DATE.MINUTES, // 1hour
+                    maxAge: MILLISECOND * SECOND * MINUTES, // 1hour
                 })
-                .status(CODE.SUCCESS)
-                .json(
-                    responseData(
-                        { accessToken: newAccessToken },
-                        'Refresh successfully'
-                    )
-                );
+                .status(HttpStatus.SUCCESS)
+                .json(new ResponseData({ accessToken: newAccessToken }));
         } catch (error) {
-            const err = error as ThrowResponse;
+            const err = error as HttpException;
 
             return res
-                .status(err.status)
-                .json(
-                    responseData(err.data, err.message, err.status, err.error)
-                );
+                .status(err.getStatusCode())
+                .json(new HttpException(err.getMessage(), err.getStatusCode()));
         }
     }
 
-    async logout(req: Request, res: Response) {
+    async logout(
+        req: Request,
+        res: Response
+    ): Promise<Response<ResponseData<boolean>, Record<string, any>>> {
         const refreshToken = req.cookies.refreshToken;
         try {
-            console.log('cookie', refreshToken);
             if (isStringEmpty([refreshToken])) {
-                return res
-                    .status(CODE.BAD_REQUEST)
-                    .json(
-                        responseData(
-                            null,
-                            'You are not logged in',
-                            CODE.BAD_REQUEST,
-                            true
-                        )
-                    );
+                throw new HttpUnAuthorizedException();
             }
 
-            await authService.userLogout(refreshToken);
+            const result = await authService.userLogout(refreshToken);
 
             return res
-                .clearCookie('refreshToken')
-                .status(CODE.SUCCESS)
-                .json(responseData(null, 'Logout successfully'));
+                .clearCookie(Token.REFRESH_TOKEN)
+                .status(HttpStatus.SUCCESS)
+                .json(new ResponseData(result));
         } catch (error) {
-            const err = error as ThrowResponse;
+            const err = error as HttpException;
 
             return res
-                .status(err.status)
-                .json(
-                    responseData(err.data, err.message, err.status, err.error)
-                );
+                .status(err.getStatusCode())
+                .json(new HttpException(err.getMessage(), err.getStatusCode()));
         }
     }
 }

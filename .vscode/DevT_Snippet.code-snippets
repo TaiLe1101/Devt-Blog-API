@@ -1,0 +1,18 @@
+{
+    "try or catch": {
+        "prefix": "try",
+        "body": [
+            "        try {",
+            "            return res",
+            "                .status(HttpStatus.SUCCESS)",
+            "                .json(new ResponseData(${1:\"data\"}));",
+            "        } catch (error) {",
+            "            const err = error as ThrowResponse;",
+            "            return res",
+            "                .status(err.status)",
+            "                .json(new ResponseData(err.data, err.status, err.message));",
+            "        }"
+        ],
+        "description": "try or catch"
+    }
+}

@@ -8,12 +8,12 @@ const upload = multer({ dest: 'src/public/uploads/post' });
 
 const router = express.Router();
 
-router.get('/', authMiddleware.verifyToken,postController.index);
+router.get('/', postController.index);
 router.post(
     '/add',
     authMiddleware.verifyToken,
     upload.single('thumbnail'),
     postController.create
 );
-router.get('/get-by-id', postController.getById);
+router.get('/:postId', postController.getById);
 export default router;

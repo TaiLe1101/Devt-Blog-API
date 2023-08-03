@@ -1,118 +1,72 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
-import userService from '../services/UserService';
-import { responseData } from '../../helpers';
-import { CODE } from '../../constant';
-import ThrowResponse from '../../types/ThrowResponse';
-import { RequestMiddleware } from '../../types/RequestMiddleware';
+import { HttpStatus } from '../../constants';
+import { HttpException, HttpValidateException } from '../../exceptions';
+import { ResponseData } from '../../global/responses';
+import { RequestAuth } from '../../types/request';
 import { isEmail, validateValues } from '../../validators';
+import userService from '../services/UserService';
+import { DeleteUserPayload, UserUpdatePayload } from '../../payloads';
 
 class UserController {
     async index(req: Request, res: Response) {
         try {
             const users = await userService.getAllUsers();
-            return res
-                .status(CODE.SUCCESS)
-                .json(
-                    responseData(
-                        users,
-                        'Get users success',
-                        CODE.SUCCESS,
-                        false
-                    )
-                );
+            return res.status(HttpStatus.SUCCESS).json(new ResponseData(users));
         } catch (error) {
-            const err = error as ThrowResponse;
+            const err = error as HttpException;
 
             return res
-                .status(err.status)
-                .json(
-                    responseData(err.data, err.message, err.status, err.error)
-                );
+                .status(err.getStatusCode())
+                .json(new HttpException(err.getMessage(), err.getStatusCode()));
         }
     }
 
-    async delete(req: Request, res: Response) {
+    async delete(req: Request<DeleteUserPayload, any, any>, res: Response) {
         const id = Number(req.params.id);
         try {
             if (validateValues([id], { unPositiveNumber: true })) {
-                return res
-                    .status(CODE.BAD_REQUEST)
-                    .json(
-                        responseData(
-                            null,
-                            'Id is valid',
-                            CODE.BAD_REQUEST,
-                            true
-                        )
-                    );
+                throw new HttpValidateException();
             }
 
             await userService.deleteUserById(id);
 
-            return res
-                .status(CODE.SUCCESS)
-                .json(
-                    responseData(
-                        null,
-                        'Deleted successfully',
-                        CODE.SUCCESS,
-                        true
-                    )
-                );
+            return res.status(HttpStatus.SUCCESS).json(new ResponseData(true));
         } catch (error) {
-            const err = error as ThrowResponse;
+            const err = error as HttpException;
 
             return res
-                .status(err.status)
-                .json(
-                    responseData(err.data, err.message, err.status, err.error)
-                );
+                .status(err.getStatusCode())
+                .json(new HttpException(err.getMessage(), err.getStatusCode()));
         }
     }
 
-    async update(req: RequestMiddleware, res: Response) {
-        const email: string = req.body.email;
-        const address: string = req.body.address;
-        const phoneNumber: string = req.body.phoneNumber;
-        const fullName: string = req.body.fullName;
-        const avatarFile = req.file;
-        const id = Number(req.user?.id);
+    async update(req: RequestAuth<UserUpdatePayload>, res: Response) {
+        const { address, email, fileImage, fullName, phoneNumber } = req.body;
+        const userId = Number(req.user?.id);
 
         try {
             if (!isEmail(email)) {
-                return res
-                    .status(CODE.BAD_REQUEST)
-                    .json(
-                        responseData(
-                            null,
-                            'Email is valid',
-                            CODE.BAD_REQUEST,
-                            true
-                        )
-                    );
+                throw new HttpValidateException();
             }
 
-            const result = await userService.updateUserById(
-                id,
+            const result = await userService.updateUserById(userId, {
                 fullName,
-                avatarFile,
+                fileImage,
                 email,
                 phoneNumber,
-                address
-            );
+                address,
+            });
 
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { password, ...other } = result.dataValues;
-            return res
-                .status(CODE.SUCCESS)
-                .json(responseData({ ...other }, 'Updated successfully'));
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-non-null-assertion
+            const { password, ...other } = result!.dataValues;
+            return res.status(HttpStatus.SUCCESS).json(new ResponseData(other));
         } catch (error) {
-            const err = error as ThrowResponse;
+            const err = error as HttpException;
+
             return res
-                .status(err.status)
-                .json(
-                    responseData(err.data, err.message, err.status, err.error)
-                );
+                .status(err.getStatusCode())
+                .json(new HttpException(err.getMessage(), err.getStatusCode()));
         }
     }
 }

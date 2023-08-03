@@ -1,16 +1,12 @@
-import jwt from 'jsonwebtoken';
 import { NextFunction, Response } from 'express';
-import { RequestMiddleware } from '../../types/RequestMiddleware';
-import { CODE } from '../../constant';
-import User from '../../database/models/Users';
-import { responseData } from '../../helpers';
+import jwt from 'jsonwebtoken';
+
+import { HttpStatus } from '../../constants';
+import { HttpUnAuthorizedException } from '../../exceptions';
+import { RequestAuth, UserJwt } from '../../types/request';
 
 class AuthMiddleware {
-    verifyToken = (
-        req: RequestMiddleware,
-        res: Response,
-        next: NextFunction
-    ) => {
+    verifyToken = (req: RequestAuth, res: Response, next: NextFunction) => {
         const token = req.headers.authorization;
 
         if (token) {
@@ -21,51 +17,33 @@ class AuthMiddleware {
                 (err, user) => {
                     if (err) {
                         return res
-                            .status(CODE.FORBIDDEN)
-                            .json(
-                                responseData(
-                                    null,
-                                    'Permission denied',
-                                    CODE.FORBIDDEN,
-                                    true
-                                )
-                            );
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .json(new HttpUnAuthorizedException());
                     }
 
-                    req.user = user as User;
+                    req.user = user as UserJwt;
+
                     next();
                 }
             );
         } else {
             return res
-                .status(CODE.FORBIDDEN)
-                .json(
-                    responseData(
-                        null,
-                        "You're not Authorization",
-                        CODE.FORBIDDEN,
-                        true
-                    )
-                );
+                .status(HttpStatus.UNAUTHORIZED)
+                .json(new HttpUnAuthorizedException());
         }
     };
 
     verifyTokenAndAdminAuth = (
-        req: RequestMiddleware,
+        req: RequestAuth,
         res: Response,
         next: NextFunction
     ) => {
         this.verifyToken(req, res, () => {
-            if (req.user?.id === Number(req.params.id)) {
+            if (Number(req.user?.id) === Number(req.params.id)) {
                 next();
             } else {
-                res.status(CODE.FORBIDDEN).json(
-                    responseData(
-                        null,
-                        'Permission denied',
-                        CODE.FORBIDDEN,
-                        true
-                    )
+                res.status(HttpStatus.UNAUTHORIZED).json(
+                    new HttpUnAuthorizedException()
                 );
             }
         });

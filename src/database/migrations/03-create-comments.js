@@ -13,16 +13,16 @@ module.exports = {
 
             content: {
                 allowNull: false,
-                type: Sequelize.STRING,
+                type: Sequelize.TEXT('long'),
             },
 
             createdAt: {
-                allowNull: false,
                 type: Sequelize.DATE,
+                defaultValue: new Date(),
             },
             updatedAt: {
-                allowNull: false,
                 type: Sequelize.DATE,
+                defaultValue: new Date(),
             },
         });
 

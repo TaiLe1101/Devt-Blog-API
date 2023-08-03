@@ -50,7 +50,7 @@ export function validateValues(
                 isValid = true;
                 return;
             }
-        } else if (value === undefined || value === null) {
+        } else if (typeof value === 'undefined' || value === null) {
             isValid = true;
         } else if (typeof value === 'number') {
             if (options?.unPositiveNumber) {

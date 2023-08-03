@@ -1,17 +1,17 @@
-import express, { Express, Request, Response } from 'express';
-import dotenv from 'dotenv';
-import process from 'process';
 import bodyParser from 'body-parser';
-import path from 'path';
-import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import express, { Express, Response } from 'express';
+import path from 'path';
+import process from 'process';
 
-import route from './routes';
+import connectCookieStore from './configs/connectCookieStore';
 import connectDb from './configs/connectDb';
 import logger from './helpers/logger';
-import connectCookieStore from './configs/connectCookieStore';
-import logENV from './helpers/logENV';
-import { responseData } from './helpers';
+import route from './routes';
+import { ResponseData } from './global/responses';
+import { HttpStatus } from './constants';
 
 dotenv.config();
 
@@ -39,10 +39,10 @@ connectCookieStore();
 
 route(app);
 
-logENV();
-
-app.get('/', (req: Request, res: Response) => {
-    res.status(200).json(responseData(null, 'Connect to server successfully'));
+app.get('/', (_, res: Response) => {
+    res.status(200).json(
+        new ResponseData(null, HttpStatus.SUCCESS, 'Welcome to APIs DevT Blog')
+    );
 });
 
 app.listen(port, () => {

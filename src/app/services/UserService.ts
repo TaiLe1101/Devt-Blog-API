@@ -1,112 +1,78 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs';
 
-import { __PROD__, CODE } from '../../constant';
-import { responseData } from '../../helpers';
+import { Server } from '../../constants';
+import { HttpException, HttpServerException } from '../../exceptions';
 import logger from '../../helpers/logger';
-import ThrowResponse from '../../types/ThrowResponse';
+import { UserUpdatePayload } from '../../payloads';
 import userRepository from '../repositories/UserRepository';
-import { FileUpload } from '../../types/FileUpload';
 
 class UserService {
     async getAllUsers() {
         try {
-            const users = await userRepository.findAllUser();
-            if (!users) {
-                throw responseData(
-                    null,
-                    'Get Users failed',
-                    CODE.BAD_REQUEST,
-                    true
-                );
-            }
+            const users = await userRepository.findAll();
             return users;
         } catch (error) {
-            const err = error as ThrowResponse;
-            if (err.status) {
+            const err = error as HttpException;
+            if (typeof err.getStatusCode() === 'function') {
                 throw err;
             }
 
-            if (!__PROD__) logger.error(err.message);
-
-            throw responseData(err.data, 'Server', CODE.SERVER, true);
+            if (!Server.__PROD__) logger.error(error);
+            throw new HttpServerException();
         }
     }
 
     async getUserByUsername(username: string) {
         try {
-            const user = userRepository.findByUsername(username);
+            const user = userRepository.findOneByUsername(username);
 
             if (!user) {
-                throw responseData(
-                    null,
-                    'User not found',
-                    CODE.NOT_FOUND,
-                    true
-                );
+                throw new HttpException();
             }
 
             return user;
         } catch (error) {
-            const err = error as ThrowResponse;
-            if (err.status) {
+            const err = error as HttpException;
+            if (typeof err.getStatusCode() === 'function') {
                 throw err;
             }
 
-            if (!__PROD__) logger.error(err.message);
-
-            throw responseData(err.data, 'Server', CODE.SERVER, true);
+            if (!Server.__PROD__) logger.error(error);
+            throw new HttpServerException();
         }
     }
 
     async deleteUserById(id: number) {
         try {
-            const deletedRow = await userRepository.deleteById(id);
+            const deletedRow = await userRepository.deleteOneById(id);
 
             if (deletedRow <= 0) {
-                throw responseData(
-                    null,
-                    'User not found',
-                    CODE.NOT_FOUND,
-                    true
-                );
+                throw new HttpException();
             }
 
-            return deletedRow;
+            return !!deletedRow;
         } catch (error) {
-            const err = error as ThrowResponse;
-            if (err.status) {
+            const err = error as HttpException;
+            if (typeof err.getStatusCode() === 'function') {
                 throw err;
             }
 
-            if (!__PROD__) logger.error(err.message);
-
-            throw responseData(err.data, 'Server', CODE.SERVER, true);
+            if (!Server.__PROD__) logger.error(error);
+            throw new HttpServerException();
         }
     }
 
-    async updateUserById(
-        id: number,
-        fullName: string | null,
-        avatarFile: FileUpload,
-        email?: string | null,
-        phoneNumber?: string | null,
-        address?: string | null
-    ) {
+    async updateUserById(id: number, payload: UserUpdatePayload) {
         try {
             let avatar: string | null = null;
-            const user = await userRepository.findById(id);
+            const user = await userRepository.findOneById(id);
 
             if (!user) {
-                throw responseData(
-                    null,
-                    'User not found',
-                    CODE.NOT_FOUND,
-                    true
-                );
+                throw new HttpException();
             }
 
-            if (avatarFile) {
+            if (payload.fileImage) {
                 if (user.avatar) {
                     fs.unlinkSync(
                         `src/public/uploads/user/${user?.avatar
@@ -115,40 +81,26 @@ class UserService {
                     );
                 }
 
-                avatar = `${process.env.BE_ORIGIN}/uploads/user/${avatarFile.filename}`;
+                avatar = `${process.env.BE_ORIGIN}/uploads/user/${payload.fileImage.filename}`;
             }
 
-            if (!fullName) fullName = null;
-            if (!email) email = null;
-            if (!phoneNumber) phoneNumber = null;
-            if (!address) address = null;
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { fileImage, ...others } = payload;
 
-            const updatedUser = await userRepository.updateById(
-                id,
-                fullName,
+            const updatedUser = await userRepository.update(id, {
+                ...others,
                 avatar,
-                email,
-                phoneNumber,
-                address
-            );
-
-            if (!updatedUser) {
-                throw responseData(
-                    null,
-                    'Update failed',
-                    CODE.BAD_REQUEST,
-                    true
-                );
-            }
+            });
 
             return updatedUser;
         } catch (error) {
-            const err = error as ThrowResponse;
-            if (err.status) {
+            const err = error as HttpException;
+            if (typeof err.getStatusCode() === 'function') {
                 throw err;
             }
-            if (!__PROD__) logger.error(err.message);
-            throw responseData(err.data, 'Server', CODE.SERVER, true);
+
+            if (!Server.__PROD__) logger.error(error);
+            throw new HttpServerException();
         }
     }
 }

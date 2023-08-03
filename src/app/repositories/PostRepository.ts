@@ -1,22 +1,29 @@
+import { PostAttributes } from './../../database/models/Posts';
 import Post from '../../database/models/Posts';
 import User from '../../database/models/Users';
 
 class PostRepository {
-    async getAll() {
-        const posts = await Post.findAll({
+    async findAll(): Promise<Post[]> {
+        return await Post.findAll({
             include: [
                 {
                     model: User,
-                    as: 'postUserData',
-                    attributes: ['id', 'fullName'],
+                    as: 'user',
+                    attributes: [
+                        'id',
+                        'fullName',
+                        'username',
+                        'email',
+                        'avatar',
+                        'address',
+                        'phoneNumber',
+                    ],
                 },
             ],
         });
-
-        return posts;
     }
 
-    async getById(id: number) {
+    async findOneById(id: number) {
         const post = await Post.findOne({
             where: {
                 id,
@@ -24,27 +31,23 @@ class PostRepository {
             include: {
                 model: User,
                 as: 'postUserData',
-                attributes: ['id', 'fullName'],
+                attributes: [
+                    'id',
+                    'fullName',
+                    'username',
+                    'email',
+                    'avatar',
+                    'address',
+                    'phoneNumber',
+                ],
             },
         });
 
         return post;
     }
 
-    async create(
-        title: string,
-        content: string,
-        thumbnail: string,
-        userId: number
-    ) {
-        const createdPost = await Post.create({
-            title,
-            content,
-            thumbnail,
-            userId,
-        });
-
-        return createdPost;
+    async create(payload: PostAttributes) {
+        return await Post.create(payload);
     }
 }
 

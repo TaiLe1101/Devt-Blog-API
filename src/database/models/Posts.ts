@@ -7,11 +7,11 @@ import User from './Users';
 export interface PostAttributes {
     id?: number;
 
-    title?: string | null;
-    content?: string | null;
-    thumbnail?: string | null;
+    title?: string;
+    content?: string;
+    thumbnail?: string;
 
-    userId?: number | null;
+    userId?: number;
 
     createdAt?: Date;
     updatedAt?: Date;
@@ -25,7 +25,7 @@ class Post extends Model<PostAttributes, PostInput> implements PostAttributes {
     public id!: number;
     public title!: string;
     public content!: string;
-    public thumbnail?: string | null | undefined;
+    public thumbnail!: string;
 
     public userId!: number;
 
@@ -51,7 +51,11 @@ Post.init(
             unique: true,
             type: DataTypes.STRING,
         },
-
+        thumbnail: {
+            allowNull: true,
+            type: DataTypes.STRING,
+            defaultValue: null,
+        },
         userId: {
             allowNull: false,
             type: DataTypes.BIGINT,
@@ -66,12 +70,12 @@ Post.init(
 
 Post.belongsTo(User, {
     foreignKey: 'userId',
-    as: 'postUserData',
+    as: 'user',
 });
 
 User.hasMany(Post, {
     foreignKey: 'userId',
-    as: 'userPostData',
+    as: 'posts',
 });
 
 export default Post;

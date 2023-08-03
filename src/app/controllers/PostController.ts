@@ -1,63 +1,48 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, Response } from 'express';
-import postService from '../services/PostService';
-import { responseData } from '../../helpers';
-import ThrowResponse from '../../types/ThrowResponse';
-import { CODE } from '../../constant';
-import { RequestMiddleware } from '../../types/RequestMiddleware';
+import { Response, Request } from 'express';
+
+import { HttpStatus } from '../../constants';
+import { HttpException, HttpValidateException } from '../../exceptions';
+import { ResponseData } from '../../global/responses';
+import { RequestAuth } from '../../types/request';
 import { validateValues } from '../../validators';
+import postService from '../services/PostService';
+import { CreatePostPayload, GetDetailPostPayload } from '../../payloads';
 
 class PostController {
-    async index(_req: Request, res: Response) {
+    async index(req: Request, res: Response) {
         try {
             const posts = await postService.getAllPosts();
-            return res
-                .status(CODE.SUCCESS)
-                .json(responseData(posts, 'Get Posts Successfully'));
+            return res.status(HttpStatus.SUCCESS).json(new ResponseData(posts));
         } catch (error) {
-            const err = error as ThrowResponse;
-
+            const err = error as HttpException;
             return res
-                .status(err.status)
-                .json(
-                    responseData(err.data, err.message, err.status, err.error)
-                );
+                .status(err.getStatusCode())
+                .json(new HttpException(err.getMessage(), err.getStatusCode()));
         }
     }
 
-    async getById(req: Request, res: Response) {
-        const id = Number(req.query.id);
+    async getById(req: Request<GetDetailPostPayload>, res: Response) {
+        const id = Number(req.params.postId);
         try {
             if (validateValues([id], { unPositiveNumber: true })) {
-                return res
-                    .status(CODE.BAD_REQUEST)
-                    .json(
-                        responseData(
-                            null,
-                            'Id is valid',
-                            CODE.BAD_REQUEST,
-                            true
-                        )
-                    );
+                throw new HttpValidateException();
             }
 
             const post = await postService.getPostById(id);
 
-            return res.status(CODE.SUCCESS).json(responseData(post, 'Ok'));
+            return res.status(HttpStatus.SUCCESS).json(new ResponseData(post));
         } catch (error) {
-            const err = error as ThrowResponse;
+            const err = error as HttpException;
             return res
-                .status(err.status)
-                .json(
-                    responseData(err.data, err.message, err.status, err.error)
-                );
+                .status(err.getStatusCode())
+                .json(new HttpException(err.getMessage(), err.getStatusCode()));
         }
     }
 
-    async create(req: RequestMiddleware, res: Response) {
-        const title = req.body.title;
-        const content = req.body.content;
-        const thumbnail = '';
+    async create(req: RequestAuth<CreatePostPayload>, res: Response) {
+        const { title, content } = req.body;
+
         const userId = Number(req.user?.id);
 
         try {
@@ -66,33 +51,20 @@ class PostController {
                     unPositiveNumber: true,
                 })
             ) {
-                return res
-                    .status(CODE.BAD_REQUEST)
-                    .json(
-                        responseData(
-                            null,
-                            'Value is valid',
-                            CODE.BAD_REQUEST,
-                            true
-                        )
-                    );
+                throw new HttpValidateException();
             }
 
-            const post = await postService.createPost(
+            const post = await postService.createPost(userId, {
                 title,
                 content,
-                thumbnail,
-                userId
-            );
+            });
 
-            return res.status(CODE.SUCCESS).json(responseData(post, 'Ok'));
+            return res.status(HttpStatus.SUCCESS).json(new ResponseData(post));
         } catch (error) {
-            const err = error as ThrowResponse;
+            const err = error as HttpException;
             return res
-                .status(err.status)
-                .json(
-                    responseData(err.data, err.message, err.status, err.error)
-                );
+                .status(err.getStatusCode())
+                .json(new HttpException(err.getMessage(), err.getStatusCode()));
         }
     }
 }

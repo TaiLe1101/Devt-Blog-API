@@ -25,29 +25,29 @@ module.exports = {
                 type: Sequelize.STRING,
             },
             avatar: {
-                allowNull: true,
                 type: Sequelize.STRING,
+                defaultValue: null,
             },
             email: {
-                allowNull: true,
                 type: Sequelize.STRING,
+                defaultValue: null,
             },
             address: {
-                allowNull: true,
                 type: Sequelize.STRING,
+                defaultValue: null,
             },
             phoneNumber: {
-                allowNull: true,
                 type: Sequelize.STRING,
+                defaultValue: null,
             },
 
             createdAt: {
-                allowNull: false,
                 type: Sequelize.DATE,
+                defaultValue: new Date(),
             },
             updatedAt: {
-                allowNull: false,
                 type: Sequelize.DATE,
+                defaultValue: new Date(),
             },
         });
     },

@@ -1,7 +1,7 @@
-import { __PROD__, CODE } from '../../constant';
-import { responseData } from '../../helpers';
+import { Server } from '../../constants';
+import { HttpException, HttpServerException } from '../../exceptions';
+import { ResponseData } from '../../global/responses';
 import logger from '../../helpers/logger';
-import ThrowResponse from '../../types/ThrowResponse';
 import cookieStoreRepository from '../repositories/CookieStoreRepository';
 
 class CookieStoreService {
@@ -10,48 +10,18 @@ class CookieStoreService {
             const refreshToken = await cookieStoreRepository.create(value);
 
             if (!refreshToken) {
-                throw responseData(
-                    null,
-                    'Created failed',
-                    CODE.BAD_REQUEST,
-                    true
-                );
+                throw new ResponseData(true);
             }
 
             return refreshToken;
         } catch (error) {
-            const err = error as ThrowResponse;
-            if (err.status) {
+            const err = error as HttpException;
+            if (typeof err.getStatusCode() === 'function') {
                 throw err;
             }
 
-            if (!__PROD__) logger.error(err.message);
-
-            throw responseData(err.data, 'Server', CODE.SERVER, true);
-        }
-    }
-
-    async findRefreshTokenByValue(value: string) {
-        try {
-            const refreshToken = await cookieStoreRepository.findByValue(value);
-            if (!refreshToken) {
-                throw responseData(
-                    null,
-                    'Refresh token not found',
-                    CODE.NOT_FOUND,
-                    true
-                );
-            }
-            return refreshToken;
-        } catch (error) {
-            const err = error as ThrowResponse;
-            if (err.status) {
-                throw err;
-            }
-
-            if (!__PROD__) logger.error(err.message);
-
-            throw responseData(err.data, 'Server', CODE.SERVER, true);
+            if (!Server.__PROD__) logger.error(error);
+            throw new HttpServerException();
         }
     }
 
@@ -60,24 +30,18 @@ class CookieStoreService {
             const deleteResult = await cookieStoreRepository.delete(value);
 
             if (deleteResult.deletedCount < 0) {
-                throw responseData(
-                    null,
-                    'Deleted failed',
-                    CODE.BAD_REQUEST,
-                    true
-                );
+                throw new HttpException();
             }
 
-            return deleteResult;
+            return !!deleteResult.deletedCount;
         } catch (error) {
-            const err = error as ThrowResponse;
-            if (err.status) {
+            const err = error as HttpException;
+            if (typeof err.getStatusCode() === 'function') {
                 throw err;
             }
 
-            if (!__PROD__) logger.error(err.message);
-
-            throw responseData(err.data, 'Server', CODE.SERVER, true);
+            if (!Server.__PROD__) logger.error(error);
+            throw new HttpServerException();
         }
     }
 }
