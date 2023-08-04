@@ -61,7 +61,7 @@ class AuthController {
             return res
                 .cookie(Token.REFRESH_TOKEN, refreshToken, {
                     httpOnly: true,
-                    secure: true,
+                    secure: Boolean(Server.__PROD__),
                     sameSite: 'none',
                     maxAge: MILLISECOND * SECOND * MINUTES, //1hour
                 })

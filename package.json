@@ -46,7 +46,7 @@
     },
     "scripts": {
         "build": "NODE_ENV=production tsc -p .",
-        "start": "NODE_ENV=development nodemon src/Server.ts",
+        "start": "nodemon src/Server.ts",
         "start:dev": "NODE_ENV=development nodemon src/Server.ts",
         "watch": "npx tsc -watch",
         "lint": "eslint ./src"
