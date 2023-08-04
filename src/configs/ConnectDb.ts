@@ -17,7 +17,7 @@ export const AppDataSource = new DataSourceConfig({
     entities: Server.__PROD__
         ? ['dist/database/entities/*{.ts,.js}']
         : ['src/database/entities/*{.ts,.js}'],
-    synchronize: Server.__PROD__ ? false : true,
+    synchronize: false,
 });
 
 const connectDb = async () => {
