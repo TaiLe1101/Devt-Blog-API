@@ -30,7 +30,7 @@ class PostRepository {
             },
             include: {
                 model: User,
-                as: 'postUserData',
+                as: 'user',
                 attributes: [
                     'id',
                     'fullName',
@@ -48,6 +48,16 @@ class PostRepository {
 
     async create(payload: PostAttributes) {
         return await Post.create(payload);
+    }
+
+    async update(id: number, payload: PostAttributes) {
+        await Post.update(payload, {
+            where: {
+                id,
+            },
+        });
+
+        return await Post.findOne({ where: { id } });
     }
 }
 

@@ -8,6 +8,8 @@ export interface PostAttributes {
     id?: number;
 
     title?: string;
+    desc?: string;
+    imgId?: string;
     content?: string;
     thumbnail?: string;
 
@@ -24,6 +26,8 @@ export type PostOutput = Required<PostAttributes>;
 class Post extends Model<PostAttributes, PostInput> implements PostAttributes {
     public id!: number;
     public title!: string;
+    public imgId!: string;
+    public desc!: string;
     public content!: string;
     public thumbnail!: string;
 
@@ -44,6 +48,14 @@ Post.init(
 
         title: {
             allowNull: false,
+            type: DataTypes.STRING,
+        },
+        desc: {
+            allowNull: true,
+            type: DataTypes.STRING,
+        },
+        imgId: {
+            allowNull: true,
             type: DataTypes.STRING,
         },
         content: {

@@ -1,10 +1,8 @@
 import express from 'express';
-import multer from 'multer';
 
 import postController from '../app/controllers/PostController';
 import authMiddleware from '../app/middlewares/AuthMiddleware';
-
-const upload = multer({ dest: 'src/public/uploads/post' });
+import upload from '../app/middlewares/MulterMiddleware';
 
 const router = express.Router();
 
@@ -14,6 +12,12 @@ router.post(
     authMiddleware.verifyToken,
     upload.single('thumbnail'),
     postController.create
+);
+router.post(
+    '/update/:id',
+    authMiddleware.verifyToken,
+    upload.single('thumbnail'),
+    postController.update
 );
 router.get('/:postId', postController.getById);
 export default router;

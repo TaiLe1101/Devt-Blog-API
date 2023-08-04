@@ -1,13 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 
 import { HttpStatus } from '../../constants';
 import { HttpException, HttpValidateException } from '../../exceptions';
 import { ResponseData } from '../../global/responses';
+import {
+    CreatePostPayload,
+    GetDetailPostPayload,
+    UpdatePostPayload,
+} from '../../payloads';
 import { RequestAuth } from '../../types/request';
 import { validateValues } from '../../validators';
 import postService from '../services/PostService';
-import { CreatePostPayload, GetDetailPostPayload } from '../../payloads';
 
 class PostController {
     async index(req: Request, res: Response) {
@@ -18,7 +22,13 @@ class PostController {
             const err = error as HttpException;
             return res
                 .status(err.getStatusCode())
-                .json(new HttpException(err.getMessage(), err.getStatusCode()));
+                .json(
+                    new ResponseData(
+                        err.getData(),
+                        err.getStatusCode(),
+                        err.getMessage()
+                    )
+                );
         }
     }
 
@@ -36,18 +46,26 @@ class PostController {
             const err = error as HttpException;
             return res
                 .status(err.getStatusCode())
-                .json(new HttpException(err.getMessage(), err.getStatusCode()));
+                .json(
+                    new ResponseData(
+                        err.getData(),
+                        err.getStatusCode(),
+                        err.getMessage()
+                    )
+                );
         }
     }
 
     async create(req: RequestAuth<CreatePostPayload>, res: Response) {
-        const { title, content } = req.body;
-
+        const { title, content, desc, imgId } = req.body;
+        const fileImage = req.file;
         const userId = Number(req.user?.id);
+
+        console.log('desc ->', desc);
 
         try {
             if (
-                validateValues([title, content, userId], {
+                validateValues([title, content, userId, desc], {
                     unPositiveNumber: true,
                 })
             ) {
@@ -57,6 +75,9 @@ class PostController {
             const post = await postService.createPost(userId, {
                 title,
                 content,
+                fileImage,
+                desc,
+                imgId,
             });
 
             return res.status(HttpStatus.SUCCESS).json(new ResponseData(post));
@@ -64,7 +85,46 @@ class PostController {
             const err = error as HttpException;
             return res
                 .status(err.getStatusCode())
-                .json(new HttpException(err.getMessage(), err.getStatusCode()));
+                .json(
+                    new ResponseData(
+                        err.getData(),
+                        err.getStatusCode(),
+                        err.getMessage()
+                    )
+                );
+        }
+    }
+
+    async update(
+        req: RequestAuth<UpdatePostPayload, any, { id: string }>,
+        res: Response
+    ) {
+        const id = Number(req.params.id);
+        const { title, content, desc } = req.body;
+        const fileImage = req.file;
+        const userId = Number(req.user?.id);
+        try {
+            const result = await postService.updatePost(id, userId, {
+                title,
+                content,
+                desc,
+                fileImage,
+            });
+
+            return res
+                .status(HttpStatus.SUCCESS)
+                .json(new ResponseData(result));
+        } catch (error) {
+            const err = error as HttpException;
+            return res
+                .status(err.getStatusCode())
+                .json(
+                    new ResponseData(
+                        err.getData(),
+                        err.getStatusCode(),
+                        err.getMessage()
+                    )
+                );
         }
     }
 }

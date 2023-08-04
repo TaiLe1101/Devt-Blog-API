@@ -115,7 +115,6 @@ class AuthController {
             if (isStringEmpty([refreshToken])) {
                 throw new HttpUnAuthorizedException();
             }
-
             const result = await authService.userLogout(refreshToken);
 
             return res

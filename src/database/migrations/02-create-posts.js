@@ -15,6 +15,14 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.STRING,
             },
+            desc: {
+                type: Sequelize.STRING,
+                defaultValue: null,
+            },
+            imgId: {
+                type: Sequelize.STRING,
+                defaultValue: null,
+            },
             content: {
                 type: Sequelize.TEXT('long'),
             },

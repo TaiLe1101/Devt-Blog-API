@@ -4,22 +4,19 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Express, Response } from 'express';
 import path from 'path';
-import process from 'process';
 
 import connectCookieStore from './configs/connectCookieStore';
 import connectDb from './configs/connectDb';
+import { HttpStatus } from './constants';
+import { ResponseData } from './global/responses';
 import logger from './helpers/logger';
 import route from './routes';
-import { ResponseData } from './global/responses';
-import { HttpStatus } from './constants';
 
 dotenv.config();
-
 const app: Express = express();
 const port = process.env.PORT || 3303;
 
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(
     cors({
         origin: (process.env.FE_ORIGIN as string).split(','),

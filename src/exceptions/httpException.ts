@@ -27,7 +27,7 @@ export class HttpException {
 
 export class HttpNotFoundException extends HttpException {
     constructor(message?: string) {
-        super(message, HttpStatus.NOT_FOUND);
+        super(message || HttpMessage.NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 }
 

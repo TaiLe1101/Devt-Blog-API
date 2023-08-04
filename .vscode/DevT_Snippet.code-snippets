@@ -1,18 +1,41 @@
 {
-    "try or catch": {
+    "try or catch controller": {
         "prefix": "try",
         "body": [
-            "        try {",
-            "            return res",
-            "                .status(HttpStatus.SUCCESS)",
-            "                .json(new ResponseData(${1:\"data\"}));",
+            "try {",
+            "  return res.status(HttpStatus.SUCCESS).json(new ResponseData(${1: \"data\"}));",
             "        } catch (error) {",
-            "            const err = error as ThrowResponse;",
+            "            const err = error as HttpException;",
             "            return res",
-            "                .status(err.status)",
-            "                .json(new ResponseData(err.data, err.status, err.message));",
+            "                .status(err.getStatusCode())",
+            "                .json(",
+            "                    new ResponseData(",
+            "                        err.getData(),",
+            "                        err.getStatusCode(),",
+            "                        err.getMessage()",
+            "                    )",
+            "                );",
             "        }"
         ],
-        "description": "try or catch"
+        "description": "try or catch controller"
+    },
+    "try or catch service": {
+        "prefix": "try",
+        "body": [
+            " try {",
+            "          ",
+            "",
+            "            return ${1:\"data\"};",
+            "        } catch (error) {",
+            "            const err = error as HttpException;",
+            "            if (typeof err.getStatusCode === 'function') {",
+            "                throw err;",
+            "            }",
+            "",
+            "            if (!Server.__PROD__) logger.error(error);",
+            "            throw new HttpServerException();",
+            "        }"
+        ],
+        "description": "try or catch service"
     }
 }

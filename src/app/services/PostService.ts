@@ -1,7 +1,12 @@
+import cloudinary from '../../configs/connectDbImages';
 import { Server } from '../../constants';
-import { HttpException, HttpServerException } from '../../exceptions';
+import {
+    HttpException,
+    HttpNotFoundException,
+    HttpServerException,
+} from '../../exceptions';
 import logger from '../../helpers/logger';
-import { CreatePostPayload } from '../../payloads';
+import { CreatePostPayload, UpdatePostPayload } from '../../payloads';
 import postRepository from '../repositories/PostRepository';
 
 class PostService {
@@ -12,7 +17,7 @@ class PostService {
             return posts;
         } catch (error) {
             const err = error as HttpException;
-            if (typeof err.getStatusCode() === 'function') {
+            if (typeof err.getStatusCode === 'function') {
                 throw err;
             }
 
@@ -32,7 +37,7 @@ class PostService {
             return post;
         } catch (error) {
             const err = error as HttpException;
-            if (typeof err.getStatusCode() === 'function') {
+            if (typeof err.getStatusCode === 'function') {
                 throw err;
             }
 
@@ -43,12 +48,31 @@ class PostService {
 
     async createPost(userId: number, payload: CreatePostPayload) {
         try {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            let thumbnail = '';
+            let imgId = '';
+
+            if (payload.fileImage) {
+                const res = await cloudinary.uploader.upload(
+                    payload.fileImage.path,
+                    (err) => {
+                        if (err) {
+                            console.log('err ->', err);
+                            throw new HttpException();
+                        }
+                    }
+                );
+
+                thumbnail = res.secure_url;
+                imgId = res.public_id;
+            }
 
             const createdPost = await postRepository.create({
                 content: payload.content,
                 title: payload.title,
                 userId,
+                thumbnail,
+                desc: payload.desc,
+                imgId,
             });
 
             if (!createdPost) {
@@ -58,7 +82,55 @@ class PostService {
             return createdPost;
         } catch (error) {
             const err = error as HttpException;
-            if (typeof err.getStatusCode() === 'function') {
+            if (typeof err.getStatusCode === 'function') {
+                throw err;
+            } else {
+                if (!Server.__PROD__) logger.error(error);
+                throw new HttpServerException();
+            }
+        }
+    }
+
+    async updatePost(id: number, userId: number, payload: UpdatePostPayload) {
+        try {
+            let thumbnail = '';
+            let imgId = '';
+            if (payload.fileImage) {
+                const findPost = await postRepository.findOneById(id);
+                if (!findPost) {
+                    throw new HttpNotFoundException();
+                }
+                cloudinary.uploader.destroy(findPost.imgId);
+
+                const res = await cloudinary.uploader.upload(
+                    payload.fileImage.path,
+                    (err) => {
+                        if (err) {
+                            console.log('err ->', err);
+                            throw new HttpException();
+                        }
+                    }
+                );
+
+                thumbnail = res.secure_url;
+                imgId = res.public_id;
+            }
+
+            const post = await postRepository.update(id, {
+                ...payload,
+                userId,
+                thumbnail,
+                imgId,
+            });
+
+            if (!post) {
+                throw new HttpNotFoundException();
+            }
+
+            return post;
+        } catch (error) {
+            const err = error as HttpException;
+            if (typeof err.getStatusCode === 'function') {
                 throw err;
             }
 
