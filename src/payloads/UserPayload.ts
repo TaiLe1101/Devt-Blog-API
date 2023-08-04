@@ -1,13 +1,22 @@
+import { BaseParam } from '../common';
 import { FileUpload } from '../types/FileUpload';
 
-export interface UserUpdatePayload {
+/** UPDATE */
+
+/** CONTROLLER */
+export interface UpdateUserBody {
     fullName: string;
-    fileImage: FileUpload;
     email: string;
     address: string;
     phoneNumber: string;
 }
 
-export interface DeleteUserPayload {
-    id: string;
+export interface UpdateUserParam extends BaseParam {
+    userId: string;
+}
+
+/** SERVICE */
+
+export interface UpdateUserPayload extends UpdateUserBody {
+    file: FileUpload;
 }

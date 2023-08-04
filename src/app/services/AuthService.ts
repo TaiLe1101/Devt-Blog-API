@@ -3,7 +3,9 @@ import { compare, genSalt, hash } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import process from 'process';
 
+import { AppDataSource } from '../../configs/ConnectDb';
 import { Server } from '../../constants';
+import { UserEntity } from '../../database/entities/UserEntity';
 import {
     HttpException,
     HttpServerException,
@@ -14,8 +16,6 @@ import logger from '../../helpers/Logger';
 import { LoginPayload, RegisterPayload } from '../../payloads';
 import userService from '../services/UserService';
 import cookieStoreService from './CookieStoreService';
-import { AppDataSource } from '../../configs/ConnectDb';
-import { UserEntity } from '../../database/entities/UserEntity';
 
 class AuthService {
     private readonly userRepository;
@@ -25,7 +25,7 @@ class AuthService {
 
     async userRegister(payload: RegisterPayload) {
         try {
-            const user = await userService.getUserByUsername(payload.username);
+            const user = await userService.findOneByUsername(payload.username);
             if (user) {
                 throw new HttpException('Username is exists');
             }
@@ -56,7 +56,7 @@ class AuthService {
 
     async userLogin(payload: LoginPayload) {
         try {
-            const user = await userService.getUserByUsername(payload.username);
+            const user = await userService.findOneByUsername(payload.username);
             if (!user) {
                 throw new HttpUnAuthorizedException('Wrong username');
             }

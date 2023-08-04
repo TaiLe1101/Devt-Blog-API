@@ -15,7 +15,7 @@ router.post(
     postController.create
 );
 
-router.post(
+router.put(
     '/update/:postId',
     authMiddleware.verifyToken,
     multerMiddleware.up().single('thumbnail'),

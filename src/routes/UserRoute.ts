@@ -8,13 +8,7 @@ const router = express.Router();
 
 router.get('/', authMiddleware.verifyToken, userController.index);
 
-router.delete(
-    '/delete/:id',
-    authMiddleware.verifyTokenAndAdminAuth,
-    userController.index
-);
-
-router.post(
+router.put(
     '/update',
     authMiddleware.verifyToken,
     multerMiddleware.up().single('avatar'),

@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import fs from 'fs';
-
 import { AppDataSource } from '../../configs/ConnectDb';
+import cloudinary from '../../configs/ConnectDbImages';
 import { Server } from '../../constants';
 import { UserEntity } from '../../database/entities/UserEntity';
 import { HttpException, HttpServerException } from '../../exceptions';
 import logger from '../../helpers/Logger';
-import { UserUpdatePayload } from '../../payloads';
+import { UpdateUserPayload } from '../../payloads';
 
 class UserService {
     private readonly userRepository;
@@ -15,13 +14,13 @@ class UserService {
         this.userRepository = AppDataSource.getRepository(UserEntity);
     }
 
-    async getAllUsers() {
+    async findAll() {
         try {
             const users = await this.userRepository.find();
             return users;
         } catch (error) {
             const err = error as HttpException;
-            if (typeof err.getStatusCode() === 'function') {
+            if (typeof err.getStatusCode === 'function') {
                 throw err;
             }
 
@@ -30,7 +29,7 @@ class UserService {
         }
     }
 
-    async getUserByUsername(username: string) {
+    async findOneByUsername(username: string) {
         try {
             const user = this.userRepository.findOneBy({
                 username,
@@ -43,7 +42,7 @@ class UserService {
             return user;
         } catch (error) {
             const err = error as HttpException;
-            if (typeof err.getStatusCode() === 'function') {
+            if (typeof err.getStatusCode === 'function') {
                 throw err;
             }
 
@@ -52,45 +51,54 @@ class UserService {
         }
     }
 
-    async updateUserById(id: number, payload: UserUpdatePayload) {
+    async update(id: number, payload: UpdateUserPayload) {
         try {
             let avatar = '';
-            const user = await this.userRepository.findOneBy({
+            let imgId = '';
+            const findUser = await this.userRepository.findOneBy({
                 id,
             });
 
-            if (!user) {
+            if (!findUser) {
                 throw new HttpException();
             }
 
-            if (payload.fileImage) {
-                if (user.avatar) {
-                    fs.unlinkSync(
-                        `src/public/uploads/user/${user?.avatar
-                            ?.split('/')
-                            .pop()}`
-                    );
+            if (payload.file) {
+                if (findUser.imgId) {
+                    cloudinary.uploader.destroy(findUser.imgId);
                 }
 
-                avatar = `${process.env.BE_ORIGIN}/uploads/user/${payload.fileImage.filename}`;
+                const res = await cloudinary.uploader
+                    .upload(payload.file.path)
+                    .catch((err) => {
+                        if (Server.__PROD__) logger.error(err);
+
+                        throw new HttpException();
+                    });
+
+                avatar = res.secure_url;
+                imgId = res.public_id;
             }
 
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { fileImage, ...others } = payload;
-
-            await this.userRepository.update(id, {
-                ...others,
+            const updatedUser = await this.userRepository.update(id, {
+                address: payload.address,
                 avatar,
+                imgId,
+                email: payload.email,
+                fullName: payload.fullName,
+                phoneNumber: payload.phoneNumber,
             });
 
-            const userR = await this.userRepository.findOneBy({
-                id,
-            });
+            if (!updatedUser.affected) {
+                throw new HttpException();
+            }
 
-            return userR;
+            const user = await this.userRepository.findOneBy({ id });
+
+            return user;
         } catch (error) {
             const err = error as HttpException;
-            if (typeof err.getStatusCode() === 'function') {
+            if (typeof err.getStatusCode === 'function') {
                 throw err;
             }
 

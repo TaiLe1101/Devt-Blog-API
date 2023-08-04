@@ -122,7 +122,9 @@ class PostService {
             let imgId = '';
 
             if (payload.file) {
-                cloudinary.uploader.destroy(findPost.imgId);
+                if (findPost.imgId) {
+                    cloudinary.uploader.destroy(findPost.imgId);
+                }
                 const res = await cloudinary.uploader.upload(
                     payload.file.path,
                     (err) => {

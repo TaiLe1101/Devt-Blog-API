@@ -35,6 +35,9 @@ export class UserEntity extends BaseEntity {
     })
     phoneNumber: string;
 
+    @Column({ nullable: true })
+    imgId: string;
+
     @ManyToOne(() => PostEntity, (post: PostEntity) => post.user, {
         onDelete: 'CASCADE',
     })
