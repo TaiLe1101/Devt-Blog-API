@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { AppDataSource } from '../../configs/connectDb';
 import cloudinary from '../../configs/connectDbImages';
 import { Server } from '../../constants';
+import { PostEntity } from '../../database/entities/PostEntity';
 import {
     HttpException,
     HttpNotFoundException,
@@ -7,12 +10,19 @@ import {
 } from '../../exceptions';
 import logger from '../../helpers/logger';
 import { CreatePostPayload, UpdatePostPayload } from '../../payloads';
-import postRepository from '../repositories/PostRepository';
 
 class PostService {
-    async getAllPosts() {
+    private readonly postRepository;
+
+    constructor() {
+        this.postRepository = AppDataSource.getRepository(PostEntity);
+    }
+
+    async findAll() {
         try {
-            const posts = await postRepository.findAll();
+            const posts = await this.postRepository.find({
+                relations: ['user'],
+            });
 
             return posts;
         } catch (error) {
@@ -26,9 +36,14 @@ class PostService {
         }
     }
 
-    async getPostById(id: number) {
+    async findOneById(id: number) {
         try {
-            const post = await postRepository.findOneById(id);
+            const post = await this.postRepository.findOne({
+                where: {
+                    id,
+                },
+                relations: ['user'],
+            });
 
             if (!post) {
                 throw new HttpException('Post is not exists');
@@ -46,14 +61,14 @@ class PostService {
         }
     }
 
-    async createPost(userId: number, payload: CreatePostPayload) {
+    async create(payload: CreatePostPayload) {
         try {
             let thumbnail = '';
             let imgId = '';
 
-            if (payload.fileImage) {
+            if (payload.file) {
                 const res = await cloudinary.uploader.upload(
-                    payload.fileImage.path,
+                    payload.file.path,
                     (err) => {
                         if (err) {
                             console.log('err ->', err);
@@ -66,14 +81,18 @@ class PostService {
                 imgId = res.public_id;
             }
 
-            const createdPost = await postRepository.create({
+            const newPost = this.postRepository.create({
                 content: payload.content,
-                title: payload.title,
-                userId,
-                thumbnail,
                 desc: payload.desc,
                 imgId,
+                thumbnail,
+                title: payload.title,
+                user: {
+                    id: payload.userId,
+                },
             });
+
+            const createdPost = await this.postRepository.save(newPost);
 
             if (!createdPost) {
                 throw new HttpException();
@@ -91,19 +110,21 @@ class PostService {
         }
     }
 
-    async updatePost(id: number, userId: number, payload: UpdatePostPayload) {
+    async update(id: number, payload: UpdatePostPayload) {
         try {
+            const findPost = await this.postRepository.findOneBy({ id });
+
+            if (!findPost) {
+                throw new HttpException();
+            }
+
             let thumbnail = '';
             let imgId = '';
-            if (payload.fileImage) {
-                const findPost = await postRepository.findOneById(id);
-                if (!findPost) {
-                    throw new HttpNotFoundException();
-                }
-                cloudinary.uploader.destroy(findPost.imgId);
 
+            if (payload.file) {
+                cloudinary.uploader.destroy(findPost.imgId);
                 const res = await cloudinary.uploader.upload(
-                    payload.fileImage.path,
+                    payload.file.path,
                     (err) => {
                         if (err) {
                             console.log('err ->', err);
@@ -111,23 +132,48 @@ class PostService {
                         }
                     }
                 );
-
                 thumbnail = res.secure_url;
                 imgId = res.public_id;
             }
 
-            const post = await postRepository.update(id, {
-                ...payload,
-                userId,
+            const updatedPost = await this.postRepository.update(id, {
+                content: payload.content,
                 thumbnail,
                 imgId,
+                user: {
+                    id: payload.userId,
+                },
+                desc: payload.desc,
+                title: payload.title,
             });
 
-            if (!post) {
-                throw new HttpNotFoundException();
+            return !!updatedPost.affected;
+        } catch (error) {
+            const err = error as HttpException;
+            if (typeof err.getStatusCode === 'function') {
+                throw err;
             }
 
-            return post;
+            if (!Server.__PROD__) logger.error(error);
+            throw new HttpServerException();
+        }
+    }
+
+    async delete(id: number) {
+        try {
+            const post = await this.postRepository.findOneBy({
+                id,
+            });
+
+            if (!post) throw new HttpNotFoundException();
+
+            cloudinary.uploader.destroy(post.imgId);
+
+            const deletedPost = await this.postRepository.delete({
+                id,
+            });
+
+            return !!deletedPost.affected;
         } catch (error) {
             const err = error as HttpException;
             if (typeof err.getStatusCode === 'function') {

@@ -1,16 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs';
 
+import { AppDataSource } from '../../configs/connectDb';
 import { Server } from '../../constants';
+import { UserEntity } from '../../database/entities/UserEntity';
 import { HttpException, HttpServerException } from '../../exceptions';
 import logger from '../../helpers/logger';
 import { UserUpdatePayload } from '../../payloads';
-import userRepository from '../repositories/UserRepository';
 
 class UserService {
+    private readonly userRepository;
+
+    constructor() {
+        this.userRepository = AppDataSource.getRepository(UserEntity);
+    }
+
     async getAllUsers() {
         try {
-            const users = await userRepository.findAll();
+            const users = await this.userRepository.find();
             return users;
         } catch (error) {
             const err = error as HttpException;
@@ -25,7 +32,9 @@ class UserService {
 
     async getUserByUsername(username: string) {
         try {
-            const user = userRepository.findOneByUsername(username);
+            const user = this.userRepository.findOneBy({
+                username,
+            });
 
             if (!user) {
                 throw new HttpException();
@@ -43,30 +52,12 @@ class UserService {
         }
     }
 
-    async deleteUserById(id: number) {
-        try {
-            const deletedRow = await userRepository.deleteOneById(id);
-
-            if (deletedRow <= 0) {
-                throw new HttpException();
-            }
-
-            return !!deletedRow;
-        } catch (error) {
-            const err = error as HttpException;
-            if (typeof err.getStatusCode() === 'function') {
-                throw err;
-            }
-
-            if (!Server.__PROD__) logger.error(error);
-            throw new HttpServerException();
-        }
-    }
-
     async updateUserById(id: number, payload: UserUpdatePayload) {
         try {
-            let avatar: string | null = null;
-            const user = await userRepository.findOneById(id);
+            let avatar = '';
+            const user = await this.userRepository.findOneBy({
+                id,
+            });
 
             if (!user) {
                 throw new HttpException();
@@ -87,12 +78,16 @@ class UserService {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { fileImage, ...others } = payload;
 
-            const updatedUser = await userRepository.update(id, {
+            await this.userRepository.update(id, {
                 ...others,
                 avatar,
             });
 
-            return updatedUser;
+            const userR = await this.userRepository.findOneBy({
+                id,
+            });
+
+            return userR;
         } catch (error) {
             const err = error as HttpException;
             if (typeof err.getStatusCode() === 'function') {

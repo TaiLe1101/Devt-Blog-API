@@ -2,7 +2,7 @@ import express from 'express';
 
 import userController from '../app/controllers/UserController';
 import authMiddleware from '../app/middlewares/AuthMiddleware';
-import upload from '../app/middlewares/MulterMiddleware';
+import multerMiddleware from '../app/middlewares/MulterMiddleware';
 
 const router = express.Router();
 
@@ -17,7 +17,7 @@ router.delete(
 router.post(
     '/update',
     authMiddleware.verifyToken,
-    upload.single('avatar'),
+    multerMiddleware.up().single('avatar'),
     userController.update
 );
 

@@ -1,10 +1,17 @@
 import multer from 'multer';
 
-const storage = multer.diskStorage({
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    },
-});
-const upload = multer({ storage });
+class MulterMiddleware {
+    private createStore() {
+        return multer.diskStorage({
+            filename: function (req, file, cb) {
+                cb(null, file.originalname);
+            },
+        });
+    }
 
-export default upload;
+    up() {
+        return multer({ storage: this.createStore() });
+    }
+}
+
+export default new MulterMiddleware();

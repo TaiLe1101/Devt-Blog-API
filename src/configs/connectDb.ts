@@ -1,24 +1,25 @@
-import { Sequelize } from 'sequelize';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import dotenv from 'dotenv';
 import process from 'process';
+import { DataSource as DataSourceConfig } from 'typeorm';
 import logger from '../helpers/logger';
 
 dotenv.config();
 
-const dbName = process.env.DB_NAME as string;
-const dbUser = process.env.DB_USER as string;
-const dbPassword = process.env.DB_PASSWORD as string;
-const dbHost = process.env.DB_HOST as string;
-
-const sequelize = new Sequelize(dbName, dbUser, dbPassword, {
-    host: dbHost || 'development',
-    dialect: 'postgres',
-    logging: false,
+export const AppDataSource = new DataSourceConfig({
+    type: process.env.DB_TYPE as any,
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT),
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    entities: ['src/database/entities/*.ts'],
+    synchronize: true,
 });
 
 const connectDb = async () => {
     try {
-        await sequelize.authenticate();
+        await AppDataSource.initialize();
         logger.info('⚡️[server]: Connect to database successfully.');
     } catch (error) {
         logger.error(
@@ -27,7 +28,5 @@ const connectDb = async () => {
         );
     }
 };
-
-export { sequelize };
 
 export default connectDb;

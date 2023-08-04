@@ -1,9 +1,11 @@
+import 'reflect-metadata';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Express, Response } from 'express';
 import path from 'path';
+import process from 'process';
 
 import connectCookieStore from './configs/connectCookieStore';
 import connectDb from './configs/connectDb';

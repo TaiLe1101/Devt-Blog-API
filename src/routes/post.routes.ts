@@ -2,22 +2,31 @@ import express from 'express';
 
 import postController from '../app/controllers/PostController';
 import authMiddleware from '../app/middlewares/AuthMiddleware';
-import upload from '../app/middlewares/MulterMiddleware';
+import multerMiddleware from '../app/middlewares/MulterMiddleware';
 
 const router = express.Router();
 
 router.get('/', postController.index);
+
 router.post(
-    '/add',
+    '/create',
     authMiddleware.verifyToken,
-    upload.single('thumbnail'),
+    multerMiddleware.up().single('thumbnail'),
     postController.create
 );
+
 router.post(
-    '/update/:id',
+    '/update/:postId',
     authMiddleware.verifyToken,
-    upload.single('thumbnail'),
+    multerMiddleware.up().single('thumbnail'),
     postController.update
 );
-router.get('/:postId', postController.getById);
+
+router.delete(
+    '/delete/:postId',
+    authMiddleware.verifyToken,
+    postController.delete
+);
+
+router.get('/:postId', postController.detail);
 export default router;

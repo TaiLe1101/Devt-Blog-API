@@ -12,11 +12,17 @@ import {
 import generateToken from '../../helpers/generateToken';
 import logger from '../../helpers/logger';
 import { LoginPayload, RegisterPayload } from '../../payloads';
-import authRepository from '../repositories/AuthRepository';
 import userService from '../services/UserService';
 import cookieStoreService from './CookieStoreService';
+import { AppDataSource } from '../../configs/connectDb';
+import { UserEntity } from '../../database/entities/UserEntity';
 
 class AuthService {
+    private readonly userRepository;
+    constructor() {
+        this.userRepository = AppDataSource.getRepository(UserEntity);
+    }
+
     async userRegister(payload: RegisterPayload) {
         try {
             const user = await userService.getUserByUsername(payload.username);
@@ -27,7 +33,7 @@ class AuthService {
             const salt = await genSalt(10);
             const hashedPassword = await hash(payload.password, salt);
 
-            const newUser = await authRepository.createUser({
+            const newUser = await this.userRepository.save({
                 ...payload,
                 password: hashedPassword,
             });
@@ -39,7 +45,7 @@ class AuthService {
             return true;
         } catch (error) {
             const err = error as HttpException;
-            if (typeof err.getStatusCode() === 'function') {
+            if (typeof err.getStatusCode === 'function') {
                 throw err;
             }
 
@@ -74,12 +80,12 @@ class AuthService {
             await cookieStoreService.createRefreshToken(refreshToken);
 
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { password: newUserPassword, ...others } = user.dataValues;
+            const { password: newUserPassword, ...others } = user;
 
             return { ...others, accessToken, refreshToken };
         } catch (error: any) {
             const err = error as HttpException;
-            if (typeof err.getStatusCode() === 'function') {
+            if (typeof err.getStatusCode === 'function') {
                 throw err;
             }
 
@@ -132,7 +138,7 @@ class AuthService {
             return { newAccessToken, newRefreshToken };
         } catch (error) {
             const err = error as HttpException;
-            if (typeof err.getStatusCode() === 'function') {
+            if (typeof err.getStatusCode === 'function') {
                 throw err;
             }
 
@@ -154,7 +160,7 @@ class AuthService {
             return isDeleted;
         } catch (error) {
             const err = error as HttpException;
-            if (typeof err.getStatusCode() === 'function') {
+            if (typeof err.getStatusCode === 'function') {
                 throw err;
             }
 

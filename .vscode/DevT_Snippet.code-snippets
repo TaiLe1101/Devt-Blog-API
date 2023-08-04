@@ -3,7 +3,8 @@
         "prefix": "try",
         "body": [
             "try {",
-            "  return res.status(HttpStatus.SUCCESS).json(new ResponseData(${1: \"data\"}));",
+            "       const result = ${1: null}",
+            "  return res.status(HttpStatus.SUCCESS).json(new ResponseData(result));",
             "        } catch (error) {",
             "            const err = error as HttpException;",
             "            return res",

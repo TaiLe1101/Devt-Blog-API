@@ -1,20 +1,40 @@
+import { BaseParam } from './../common';
 import { FileUpload } from '../types/FileUpload';
 
-export interface GetDetailPostPayload {
+/** GET */
+export interface GetDetailPostParam extends BaseParam {
     postId: string;
 }
 
-export interface CreatePostPayload {
+/** CREATE */
+
+/** CONTROLLER */
+export interface CreatePostBody {
     title: string;
-    content: string;
     desc: string;
-    imgId: string;
-    fileImage?: FileUpload;
+    content: string;
+}
+export type UpdatePostBody = CreatePostBody;
+export interface UpdatePostParam extends BaseParam {
+    postId: string;
 }
 
-export interface UpdatePostPayload {
-    title: string;
-    content: string;
-    desc: string;
-    fileImage?: FileUpload;
+/** SERVICE */
+export interface CreatePostPayload extends CreatePostBody {
+    userId: number;
+    file: FileUpload;
+}
+export type UpdatePostPayload = CreatePostPayload;
+
+/** DELETE */
+
+/** CONTROLLER */
+export interface DeletePostParam extends BaseParam {
+    postId: string;
+}
+
+/** SERVICE */
+
+export interface DeletePostPayload {
+    id: number;
 }

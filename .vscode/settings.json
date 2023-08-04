@@ -6,6 +6,7 @@
         "fieldname",
         "hstore",
         "middlewares",
-        "tsbuildinfo"
+        "tsbuildinfo",
+        "typeorm"
     ]
 }
