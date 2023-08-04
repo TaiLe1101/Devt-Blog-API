@@ -136,6 +136,9 @@ class PostService {
                 );
                 thumbnail = res.secure_url;
                 imgId = res.public_id;
+            } else {
+                thumbnail = findPost.thumbnail;
+                thumbnail = findPost.imgId;
             }
 
             const updatedPost = await this.postRepository.update(id, {

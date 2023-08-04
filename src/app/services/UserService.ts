@@ -78,6 +78,9 @@ class UserService {
 
                 avatar = res.secure_url;
                 imgId = res.public_id;
+            } else {
+                avatar = findUser.avatar;
+                imgId = findUser.imgId;
             }
 
             const updatedUser = await this.userRepository.update(id, {
