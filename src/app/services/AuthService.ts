@@ -9,12 +9,12 @@ import {
     HttpServerException,
     HttpUnAuthorizedException,
 } from '../../exceptions';
-import generateToken from '../../helpers/generateToken';
-import logger from '../../helpers/logger';
+import generateToken from '../../helpers/GenerateToken';
+import logger from '../../helpers/Logger';
 import { LoginPayload, RegisterPayload } from '../../payloads';
 import userService from '../services/UserService';
 import cookieStoreService from './CookieStoreService';
-import { AppDataSource } from '../../configs/connectDb';
+import { AppDataSource } from '../../configs/ConnectDb';
 import { UserEntity } from '../../database/entities/UserEntity';
 
 class AuthService {

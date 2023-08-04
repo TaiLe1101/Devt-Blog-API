@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs';
 
-import { AppDataSource } from '../../configs/connectDb';
+import { AppDataSource } from '../../configs/ConnectDb';
 import { Server } from '../../constants';
 import { UserEntity } from '../../database/entities/UserEntity';
 import { HttpException, HttpServerException } from '../../exceptions';
-import logger from '../../helpers/logger';
+import logger from '../../helpers/Logger';
 import { UserUpdatePayload } from '../../payloads';
 
 class UserService {

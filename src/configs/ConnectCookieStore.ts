@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import logger from '../helpers/logger';
+import logger from '../helpers/Logger';
 
 async function connectCookieStore() {
     const password = process.env.MG_PASSWORD as string;

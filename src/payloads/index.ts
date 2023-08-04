@@ -1,3 +1,3 @@
-export * from './authPayload';
-export * from './postPayload';
-export * from './userPayload';
+export * from './AuthPayload';
+export * from './PostPayload';
+export * from './UserPayload';

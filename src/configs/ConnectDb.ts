@@ -2,7 +2,8 @@
 import dotenv from 'dotenv';
 import process from 'process';
 import { DataSource as DataSourceConfig } from 'typeorm';
-import logger from '../helpers/logger';
+import logger from '../helpers/Logger';
+import { Server } from '../constants';
 
 dotenv.config();
 
@@ -13,8 +14,10 @@ export const AppDataSource = new DataSourceConfig({
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: ['src/database/entities/*.ts'],
-    synchronize: true,
+    entities: Server.__PROD__
+        ? ['dist/database/entities/*{.ts,.js}']
+        : ['src/database/entities/*{.ts,.js}'],
+    synchronize: Boolean(Server.__PROD__),
 });
 
 const connectDb = async () => {

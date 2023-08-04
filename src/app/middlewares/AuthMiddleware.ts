@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 import { HttpStatus } from '../../constants';
 import { HttpUnAuthorizedException } from '../../exceptions';
-import { RequestAuth, UserJwt } from '../../types/request';
+import { RequestAuth, UserJwt } from '../../types/Request';
 
 class AuthMiddleware {
     verifyToken = (req: RequestAuth, res: Response, next: NextFunction) => {

@@ -45,9 +45,9 @@
         "typescript": "^5.0.4"
     },
     "scripts": {
-        "build": "tsc -p .",
-        "start": "nodemon src/server.ts",
-        "start:dev": "NODE_ENV=development nodemon src/server.ts",
+        "build": "NODE_ENV=production tsc -p .",
+        "start": "NODE_ENV=production node dist/Server.js",
+        "start:dev": "NODE_ENV=development nodemon src/Server.ts",
         "watch": "npx tsc -watch",
         "lint": "eslint ./src"
     }

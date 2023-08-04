@@ -8,7 +8,7 @@ import {
 } from '../../exceptions';
 import { ResponseData } from '../../global/responses';
 import { UserUpdatePayload } from '../../payloads';
-import { RequestAuth } from '../../types/request';
+import { RequestAuth } from '../../types/Request';
 import { isEmail } from '../../validators';
 import userService from '../services/UserService';
 

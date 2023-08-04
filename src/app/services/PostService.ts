@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { AppDataSource } from '../../configs/connectDb';
-import cloudinary from '../../configs/connectDbImages';
+import { AppDataSource } from '../../configs/ConnectDb';
+import cloudinary from '../../configs/ConnectDbImages';
 import { Server } from '../../constants';
 import { PostEntity } from '../../database/entities/PostEntity';
 import {
@@ -8,7 +8,7 @@ import {
     HttpNotFoundException,
     HttpServerException,
 } from '../../exceptions';
-import logger from '../../helpers/logger';
+import logger from '../../helpers/Logger';
 import { CreatePostPayload, UpdatePostPayload } from '../../payloads';
 
 class PostService {

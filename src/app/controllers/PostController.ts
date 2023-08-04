@@ -9,8 +9,8 @@ import {
     UpdatePostBody,
     UpdatePostParam,
 } from '../../payloads';
-import { CreatePostBody, DeletePostParam } from '../../payloads/postPayload';
-import { RequestAuth } from '../../types/request';
+import { CreatePostBody, DeletePostParam } from '../../payloads/PostPayload';
+import { RequestAuth } from '../../types/Request';
 import { validateValues } from '../../validators';
 import postService from '../services/PostService';
 

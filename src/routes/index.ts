@@ -1,8 +1,8 @@
 import { Express } from 'express';
 
-import postRouter from './post.routes';
-import authRouter from './auth.routes';
-import userRouter from './user.routes';
+import authRouter from './AuthRoute';
+import postRouter from './PostRoute';
+import userRouter from './UserRoute';
 
 function route(app: Express) {
     const endPointURL = '/api';

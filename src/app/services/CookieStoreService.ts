@@ -1,7 +1,7 @@
 import { Server } from '../../constants';
 import { HttpException, HttpServerException } from '../../exceptions';
 import { ResponseData } from '../../global/responses';
-import logger from '../../helpers/logger';
+import logger from '../../helpers/Logger';
 import cookieStoreRepository from '../repositories/CookieStoreRepository';
 
 class CookieStoreService {

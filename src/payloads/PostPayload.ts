@@ -1,4 +1,4 @@
-import { BaseParam } from './../common';
+import { BaseParam } from '../common';
 import { FileUpload } from '../types/FileUpload';
 
 /** GET */
