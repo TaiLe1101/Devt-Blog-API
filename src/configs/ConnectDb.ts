@@ -14,9 +14,7 @@ export const AppDataSource = new DataSourceConfig({
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: Server.__PROD__
-        ? ['dist/database/entities/*{.ts,.js}']
-        : ['src/database/entities/*{.ts,.js}'],
+    entities: ['src/database/entities/*{.ts,.js}'],
     synchronize: false,
 });
 
