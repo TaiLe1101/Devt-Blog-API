@@ -31,7 +31,7 @@ class PostService {
                 throw err;
             }
 
-            logger.error(error);
+            if (!Server.__PROD__) logger.error(error);
             throw new HttpServerException();
         }
     }
