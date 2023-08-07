@@ -55,15 +55,12 @@ class AuthController {
 
             const user = await authService.userLogin({ username, password });
             const { refreshToken, ...others } = user;
-            const MILLISECOND = 1000;
-            const SECOND = 60;
-            const MINUTES = 60;
             return res
                 .cookie(Token.REFRESH_TOKEN, refreshToken, {
+                    domain: Server.__PROD__ ? undefined : process.env.FE_HOST,
                     httpOnly: true,
                     secure: Boolean(Server.__PROD__),
-                    sameSite: 'none',
-                    maxAge: MILLISECOND * SECOND * MINUTES, //1hour
+                    sameSite: Server.__PROD__ ? 'none' : 'lax',
                 })
                 .status(HttpStatus.SUCCESS)
                 .json(new ResponseData(others));
@@ -85,15 +82,12 @@ class AuthController {
 
             const { newAccessToken, newRefreshToken } =
                 await authService.refreshToken(refreshToken);
-            const MILLISECOND = 1000;
-            const SECOND = 60;
-            const MINUTES = 60;
             return res
                 .cookie(Token.REFRESH_TOKEN, newRefreshToken, {
+                    domain: Server.__PROD__ ? undefined : process.env.FE_HOST,
                     httpOnly: true,
                     secure: Boolean(Server.__PROD__),
-                    sameSite: 'none',
-                    maxAge: MILLISECOND * SECOND * MINUTES, // 1hour
+                    sameSite: Server.__PROD__ ? 'none' : 'lax',
                 })
                 .status(HttpStatus.SUCCESS)
                 .json(new ResponseData({ accessToken: newAccessToken }));

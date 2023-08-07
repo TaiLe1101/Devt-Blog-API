@@ -60,6 +60,7 @@ class PostController {
     async create(req: RequestAuth<CreatePostBody>, res: Response) {
         const { content, desc, title } = req.body;
         const file = req.file;
+        const test = req.files;
         const userId = Number(req.user?.id);
 
         try {
